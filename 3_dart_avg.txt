@@ -1,2 +1,2 @@
-number of visits = 198
-3 dart average = 41.52
+number of visits = 0
+3 dart average = 0
