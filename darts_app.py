@@ -133,13 +133,12 @@ def init_avg_file(n):
             if math.isnan(avg):
                 avg = "0"
             update_3_dart_avg_file(n_visits, avg)
-            return str(avg)
         except FileNotFoundError:
             # init file if not found
             with open(f"{os.path.dirname(os.path.realpath(__file__))}/t20_practice.csv", "w") as f:
                 f.write("Timestamp,Dart1,Dart2,Dart3,Total")
             f.close()
-            return "_____"        
+        return "_____"        
     return nop
 
 @app.callback(
