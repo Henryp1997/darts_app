@@ -136,7 +136,9 @@ def init_avg_file(n):
             return str(avg)
         except FileNotFoundError:
             # init file if not found
-            open(f"{os.path.dirname(os.path.realpath(__file__))}/t20_practice.csv", "w").close()
+            with open(f"{os.path.dirname(os.path.realpath(__file__))}/t20_practice.csv", "w") as f:
+                f.write("Timestamp,Dart1,Dart2,Dart3,Total")
+            f.close()
             return "_____"        
     return nop
 
