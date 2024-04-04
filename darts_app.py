@@ -126,13 +126,18 @@ def init_avg_file(n):
     # use btn1 as an input but only trigger this callback once - on page load
     trigger = dash.callback_context.triggered[0]['prop_id']
     if trigger == ".":
-        df = pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/t20_practice.csv")
-        n_visits = len(df)
-        avg = float("%.2f" % df['Total'].mean())
-        if math.isnan(avg):
-            avg = "0"
-        update_3_dart_avg_file(n_visits, avg)
-        return str(avg)
+        try:
+            df = pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/t20_practice.csv")
+            n_visits = len(df)
+            avg = float("%.2f" % df['Total'].mean())
+            if math.isnan(avg):
+                avg = "0"
+            update_3_dart_avg_file(n_visits, avg)
+            return str(avg)
+        except FileNotFoundError:
+            # init file if not found
+            open(f"{os.path.dirname(os.path.realpath(__file__))}/t20_practice.csv", "w").close()
+            return "_____"        
     return nop
 
 @app.callback(
