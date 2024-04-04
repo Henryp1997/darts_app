@@ -1,14 +1,13 @@
 import dash
 from dash import html
 from dash import no_update as nop
-import dash_bootstrap_components as dbc
 from dash.dependencies import Output, Input, State
 import math
 import os
 import pandas as pd
 from datetime import datetime
 
-app = dash.Dash(__name__,external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__)
 app.title = 'Darts score recorder'
 
 def write_darts_to_file(d1, d2, d3):
@@ -51,7 +50,7 @@ def convert_score(value):
     return int(value)
 
 def update_layout():
-    body = dbc.Container([
+    body = html.Div([
         html.Div(id="hidden_div1", style={"display": "none"}),
         html.Div("0", id="n_visits", style={"display": "none"}),
         html.Div(style={"height": "1rem"}),
