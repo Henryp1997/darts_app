@@ -2,8 +2,10 @@ from datetime import datetime
 import os
 from dash import no_update as nop
 
-def write_darts_to_file(d1, d2, d3, t20_or_19):
-    csv_file = f"{os.path.dirname(os.path.realpath(__file__))}/{t20_or_19}_practice.csv"
+data_path = f"{os.path.dirname(os.path.realpath(__file__))}/data_store"
+
+def write_darts_to_file(d1, d2, d3, target):
+    csv_file = f"{data_path}/{target}_practice.csv"
     now = datetime.strftime(datetime.now(), "%d/%m/%Y")
     darts = [d1, d2, d3]
     if 'Bull' in darts:
@@ -14,13 +16,13 @@ def write_darts_to_file(d1, d2, d3, t20_or_19):
     with open(csv_file, "a") as f:
         f.write(f"\n{now},{darts[0]},{darts[1]},{darts[2]},{total}")
 
-def read_3_dart_avg(t20_or_19, avg=True):
-    with open(f"{os.path.dirname(os.path.realpath(__file__))}/{t20_or_19}_3_dart_avg.txt", "r") as f:
+def read_3_dart_avg(target, avg=True):
+    with open(f"{data_path}/{target}_3_dart_avg.txt", "r") as f:
         lines = f.readlines()
     return float(lines[avg].split("= ")[1])
 
-def update_3_dart_avg_file(n_visits, avg, t20_or_19):
-    with open(f"{os.path.dirname(os.path.realpath(__file__))}/{t20_or_19}_3_dart_avg.txt", "w") as f:
+def update_3_dart_avg_file(n_visits, avg, target):
+    with open(f"{data_path}/{target}_3_dart_avg.txt", "w") as f:
         f.write(f"number of visits = {n_visits}\n3 dart average = {avg}")
 
 def record_miss_bull_25(name, d1, d2):
