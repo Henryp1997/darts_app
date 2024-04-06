@@ -11,6 +11,14 @@ def layout():
         html.Div(id="hidden_div1", style={"display": "none"}),
         html.Div("Darts Practice App", style={"color": "white", "font-size": "2.5rem", "text-align": "center"}),
         html.Div(style={"height": "1rem"}),
+        html.Div("Match", className="home_heading"),
+        html.Div(style={"height": "1rem"}),
+        html.Div([
+            html.A(f"▸ 301", id="301_link", href='match?start=301', className="home_link_inner"),
+            html.Div(style={"height": "1rem"}),
+            html.A(f"▸ 501", id="501_link", href='match?start=501', className="home_link_inner"),
+        ]),
+        html.Div(style={"height": "1rem"}),
         html.Div("Practice", className="home_heading"),
         html.Div(style={"height": "1rem"}),
         html.Div([
