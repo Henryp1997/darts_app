@@ -18,7 +18,7 @@ def layout():
             html.Div(style={"height": "1rem"}),
             html.A(f"▸ Treble 19s", id="t19_link", href='practice?target=t19', className="home_link_inner"),
             html.Div(style={"height": "1rem"}),
-            html.A(f"▸ Bullseye", id="bull_link", href='practice?target=bull', className="home_link_inner"),
+            html.A(f"▸ Bullseye", id="bull_link", href='bull-practice', className="home_link_inner"),
         ]),
         html.Div(style={"height": "1rem"}),
         html.Div("Plotting and analysis", className="home_heading"),

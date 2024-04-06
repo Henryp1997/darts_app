@@ -12,17 +12,15 @@ dash.register_page(__name__)
 titles = {
     "t20": "Treble 20 Practice",
     "t19": "Treble 19 Practice",
-    "bull": "Bullseye Practice"
 }
 
 titles_rev = {
     "Treble 20 Practice": "t20",
     "Treble 19 Practice": "t19",
-    "Bullseye Practice": "bull"
 }
 
 def layout(target=None):
-    if target not in ("t20", "t19", "bull"):
+    if target not in ("t20", "t19"):
         print("hello")
         return html.Div("404", style={"color": "white", "font-size": "2rem"})
     return html.Div([
