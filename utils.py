@@ -4,22 +4,24 @@ from dash import no_update as nop
 
 data_path = f"{os.path.dirname(os.path.realpath(__file__))}/data_store"
 
+def calculate_total(d1, d2, d3):
+    darts = [d1, d2, d3]
+    if 'Bull' in darts:
+        darts[darts.index('Bull')] = 50
+    d1, d2, d3 = convert_score(d1), convert_score(d2), convert_score(d3)
+    return d1, d2, d3, sum([int(i) for i in [d1, d2, d3]])
+
 def write_darts_to_file(d1, d2, d3, target):
     csv_file = f"{data_path}/{target}_practice.csv"
     now = datetime.strftime(datetime.now(), "%d/%m/%Y")
-    darts = [d1, d2, d3]
-    if 'Bull' in darts and target != "bull":
-        darts[darts.index('Bull')] = 50
-
-    if target != "bull":
-        total = sum([int(i) for i in [convert_score(d1), convert_score(d2), convert_score(d3)]])
+    d1, d2, d3, total = calculate_total(d1, d2, d3)
 
     with open(csv_file, "a") as f:
         if target != "bull":
-            f.write(f"\n{now},{darts[0]},{darts[1]},{darts[2]},{total}")
+            f.write(f"\n{now},{d1},{d2},{d3},{total}")
         else:
             # don't care about total for bullseye practice
-            f.write(f"\n{now},{darts[0]},{darts[1]},{darts[2]}")
+            f.write(f"\n{now},{d1},{d2},{d3}")
 
 def read_3_dart_avg(target, avg=True):
     with open(f"{data_path}/{target}_3_dart_avg.txt", "r") as f:
