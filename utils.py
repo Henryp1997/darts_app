@@ -14,7 +14,8 @@ def calculate_total(d1, d2, d3):
 def write_darts_to_file(d1, d2, d3, target):
     csv_file = f"{data_path}/{target}_practice.csv"
     now = datetime.strftime(datetime.now(), "%d/%m/%Y")
-    d1, d2, d3, total = calculate_total(d1, d2, d3)
+    if target != "bull":
+        d1, d2, d3, total = calculate_total(d1, d2, d3) 
 
     with open(csv_file, "a") as f:
         if target != "bull":
