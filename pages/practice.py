@@ -21,11 +21,13 @@ titles_rev = {
 
 def layout(target=None):
     if target not in ("t20", "t19"):
-        print("hello")
         return html.Div("404", style={"color": "white", "font-size": "2rem"})
     return html.Div([
             html.Div(f"{titles[target]}", id="title", style={"color": "white", "font-size": "2rem", "border-bottom": "1px solid #fff"}),
             html.Div("0", id="n_visits", style={"display": "none"}),
+            html.Div("0", id="running_total", style={"display": "none"}),
+            html.Div("0", id="n_visits_alltime", style={"display": "none"}),
+            html.Div("0", id="all_time_total", style={"display": "none"}),
             html.Div(style={"height": "1rem"}),
             html.Div([
                 html.Div(style={"height": "0.5rem"}),
@@ -90,6 +92,8 @@ def layout(target=None):
 ### CALLBACKS
 @callback(
     Output("3_dart_avg", "children"),
+    Output("all_time_total", "children"),
+    Output("n_visits_alltime", "children"),
     Input("btn_1", "children"),
     State("title", "children")
 )
@@ -102,10 +106,12 @@ def init_avg_file(n, title):
             df = pd.read_csv(f"{data_path}/{target}_practice.csv")
             n_visits = len(df)
             avg = float("%.2f" % df['Total'].mean())
+            total = int(df['Total'].sum())
             if math.isnan(avg):
                 avg = "0"
-            update_3_dart_avg_file(n_visits, avg, target)
-            return str(avg)
+                total = "0"
+            # update_3_dart_avg_file(n_visits, avg, target)
+            return str(avg), str(total), str(n_visits)
         except FileNotFoundError:
             # init file if not found
             with open(f"{data_path}/{target}_practice.csv", "w") as f:
@@ -172,16 +178,19 @@ def record_thrown_dart(*args):
     Output("dart_1", "children", allow_duplicate=True),
     Output("dart_2", "children", allow_duplicate=True),
     Output("dart_3", "children", allow_duplicate=True),
+    Output("running_total", "children", allow_duplicate=True),
     Input("btn_confirm", "n_clicks"),
     State("dart_1", "children"),
     State("dart_2", "children"),
     State("dart_3", "children"),
+    State("running_total", "children"),
     State("title", "children"),
     prevent_initial_call=True
 )
-def record_all_3_darts(n_confirm, d1, d2, d3, title):
+def record_all_3_darts(n_confirm, d1, d2, d3, running_total, title):
+    total = calculate_total(d1, d2, d3)[-1]
     write_darts_to_file(d1, d2, d3, titles_rev[title])
-    return "_____", "_____", "_____"
+    return "_____", "_____", "_____", str(int(running_total) + total)
 
 @callback(
     Output("dart_1", "children", allow_duplicate=True),
@@ -211,47 +220,23 @@ def enable_confirm_btn(dart_3, dart_1, dart_2):
     return dart_3 == "_____"
     
 @callback(
-    Output("3_dart_avg_current", "children"),
-    Output("n_visits", "children"),
-    Input("btn_confirm", "n_clicks"),
-    State("3_dart_avg_current", "children"),
-    State("n_visits", "children"),
-    State("dart_1", "children"),
-    State("dart_2", "children"),
-    State("dart_3", "children"),
-    prevent_initial_call=True
-)
-def record_3_dart_avg(n_confirm, curr_avg, n_visits, dart_1, dart_2, dart_3):
-    dart_1 = convert_score(dart_1)
-    dart_2 = convert_score(dart_2)
-    dart_3 = convert_score(dart_3)
-
-    curr_avg = 0 if curr_avg == "_____" else int(curr_avg)
-    n_visits = int(n_visits)
-    new_avg = float("%.2f" % (((n_visits * curr_avg) + (dart_1 + dart_2 + dart_3)) / (n_visits + 1)))
-
-    return new_avg, str(n_visits + 1)
-
-@callback(
     Output("3_dart_avg", "children", allow_duplicate=True),
-    Input("btn_confirm", "n_clicks"),
-    State("dart_1", "children"),
-    State("dart_2", "children"),
-    State("dart_3", "children"),
+    Output("3_dart_avg_current", "children", allow_duplicate=True),
+    Output("n_visits", "children", allow_duplicate=True),
+    Input("running_total", "children"),
+    State("all_time_total", "children"),
+    State("n_visits", "children"),
+    State("n_visits_alltime", "children"),
     State("title", "children"),
     prevent_initial_call=True
 )
-def record_3_dart_avg_all_time(n_confirm, dart_1, dart_2, dart_3, title):
-    target = titles_rev[title]
-    dart_1 = convert_score(dart_1)
-    dart_2 = convert_score(dart_2)
-    dart_3 = convert_score(dart_3)
+def record_3_dart_avg(running_total, alltime_total, n_visits_current, n_visits_all, title):
+    # calculate current session average
+    n_visits_current = int(n_visits_current)
+    new_curr_avg = int(running_total) / (n_visits_current + 1)
 
-    n_visits = read_3_dart_avg(target, avg=False)
-    curr_avg = read_3_dart_avg(target)
-    new_avg = (((n_visits * curr_avg) + (dart_1 + dart_2 + dart_3)) / (n_visits + 1))
-    new_avg_2dp = float("%.2f" % new_avg)
+    # calculate all time average
+    n_visits_all = int(n_visits_all)
+    new_alltime_avg = (int(alltime_total) + int(running_total)) / (n_visits_all + n_visits_current + 1)
 
-    update_3_dart_avg_file(n_visits + 1, new_avg, target)
-
-    return new_avg_2dp
+    return float("%.2f" % new_alltime_avg), float("%.2f" % new_curr_avg), str(n_visits_current + 1)
