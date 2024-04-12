@@ -104,19 +104,10 @@ def init_avg_file(n, title):
     if trigger == ".":
         try:
             df = pd.read_csv(f"{data_path}/{target}_practice.csv")
-            n_visits = len(df)
-            avg = float("%.2f" % df['Total'].mean())
-            total = int(df['Total'].sum())
-            if math.isnan(avg):
-                avg = "0"
-                total = "0"
-            # update_3_dart_avg_file(n_visits, avg, target)
-            return str(avg), str(total), str(n_visits)
+            return initialise_3_dart_avg(df)
         except FileNotFoundError:
             # init file if not found
-            with open(f"{data_path}/{target}_practice.csv", "w") as f:
-                f.write("Timestamp,Dart1,Dart2,Dart3,Total")
-            f.close()
+            create_3_dart_avg_file(data_path, target)
             return "_____"        
     return nop
 
@@ -130,14 +121,9 @@ def init_avg_file(n, title):
 )
 def double_treble_text(btn_1_text, n_double, n_treble, *btns):
     trigger = dash.callback_context.triggered[0]['prop_id']
-    if "double" in trigger:
-        if "D" in btn_1_text:
-            return [f"{i}" for i in range(1, 21)]
-        return [f"D{i}" for i in range(1, 21)]
-    elif "treble" in trigger:
-        if "T" in btn_1_text:
-            return [f"{i}" for i in range(1, 21)]
-        return [f"T{i}" for i in range(1, 21)]
+    
+    if "double" in trigger or "treble" in trigger:
+        return convert_all_btns_to_dbl_tbl(btn_1_text, d_or_t=trigger.split("btn_")[1].strip(".n_clicks")[0].upper())
       
     # below code executed if one of the number buttons triggered this callback
     # just returns the button texts to non double or treble after each input
@@ -158,22 +144,15 @@ def double_treble_text(btn_1_text, n_double, n_treble, *btns):
     prevent_initial_call=True
 )
 def record_thrown_dart(*args):
-    if args[-1] != "_____":
+    d1, d2, d3 = args[-3:]
+    if d3 != "_____":
         return nop, nop, nop
     trigger = dash.callback_context.triggered[0]['prop_id']
     btn_names = args[23:-3]
     
     value = trigger.split("btn_")[1].split(".n_clicks")[0]
-    if value in ['miss', 'bull', '25']:
-        return record_miss_bull_25(value, args[-3], args[-2])            
-    
-    value = int(value)
-    if args[-3] == "_____":
-        return btn_names[value - 1], nop, nop
-    if args[-2] == "_____":
-        return nop, btn_names[value - 1], nop
-    return nop, nop, btn_names[value - 1]
-    
+    return record_dart_in_correct_place(value, btn_names, d1, d2)
+
 @callback(
     Output("dart_1", "children", allow_duplicate=True),
     Output("dart_2", "children", allow_duplicate=True),
@@ -188,7 +167,7 @@ def record_thrown_dart(*args):
     prevent_initial_call=True
 )
 def record_all_3_darts(n_confirm, d1, d2, d3, running_total, title):
-    total = calculate_total(d1, d2, d3)[-1]
+    total = calculate_total(d1, d2, d3)
     write_darts_to_file(d1, d2, d3, titles_rev[title])
     return "_____", "_____", "_____", str(int(running_total) + total)
 
@@ -227,16 +206,13 @@ def enable_confirm_btn(dart_3, dart_1, dart_2):
     State("all_time_total", "children"),
     State("n_visits", "children"),
     State("n_visits_alltime", "children"),
-    State("title", "children"),
     prevent_initial_call=True
 )
-def record_3_dart_avg(running_total, alltime_total, n_visits_current, n_visits_all, title):
+def record_3_dart_avg(running_total, alltime_total, n_visits_current, n_visits_all):
     # calculate current session average
-    n_visits_current = int(n_visits_current)
-    new_curr_avg = int(running_total) / (n_visits_current + 1)
+    new_curr_avg = calc_session_3_dart_avg(n_visits_current, running_total)
 
     # calculate all time average
-    n_visits_all = int(n_visits_all)
-    new_alltime_avg = (int(alltime_total) + int(running_total)) / (n_visits_all + n_visits_current + 1)
+    new_alltime_avg = calc_alltime_3_dart_avg(n_visits_current, n_visits_all, running_total, alltime_total)
 
-    return float("%.2f" % new_alltime_avg), float("%.2f" % new_curr_avg), str(n_visits_current + 1)
+    return float("%.2f" % new_alltime_avg), float("%.2f" % new_curr_avg), str(int(n_visits_current) + 1)
