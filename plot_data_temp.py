@@ -12,10 +12,6 @@ def plot_score_freq(target, linearised_score, dart="all", sngl_dbl_tbl="all"):
 
     # order list how scores appear on dart board
     sngl_scores = linearised_score
-    # dbl_scores = [f'D{i}' for i in sngl_scores if i not in ("0", "25", "50")]
-    # tbl_scores = [f'T{i}' for i in sngl_scores if i not in ("0", "25", "50")]
-        
-    # score_sets = [sngl_scores, dbl_scores, tbl_scores]
 
     # get thrown darts
     if dart == "all":
@@ -79,20 +75,22 @@ def plot_score_freq(target, linearised_score, dart="all", sngl_dbl_tbl="all"):
     plt.savefig(f"{os.path.dirname(os.path.realpath(__file__))}/plots/{target}/score_freq_dart_{dart}{file_name_ext}.svg")
 
 t20_linearised_score = ['0', '3', '19', '7', '16', '8', '11', '14', '9', '12', '5', '20', '1', '18', '4', '13', '6', '10', '15', '2', '17', '25', '50']
-t19_linearised_score = [t20_linearised_score[i - 9] for i in range(len(t20_linearised_score))]
+t19_linearised_score = ['0', '1', '20', '5', '12', '9', '14', '11', '8', '16', '7', '19', '3', '17', '2', '15', '10', '6', '13', '4', '18', '25', '50']
 
-# for dart in ["1", "2", "3", "1, 2", "2, 3", "all"]:
-#     plot_score_freq("t20", t20_linearised_score, dart=dart, sngl_dbl_tbl="1")
-#     plot_score_freq("t20", t20_linearised_score, dart=dart, sngl_dbl_tbl="2")
-#     plot_score_freq("t20", t20_linearised_score, dart=dart, sngl_dbl_tbl="3")
-#     plot_score_freq("t20", t20_linearised_score, dart=dart, sngl_dbl_tbl="1, 2")
-#     plot_score_freq("t20", t20_linearised_score, dart=dart, sngl_dbl_tbl="2, 3")
-#     plot_score_freq("t20", t20_linearised_score, dart=dart, sngl_dbl_tbl="all")
+for dart in ["1", "2", "3", "1, 2", "1, 3", "2, 3", "all"]:
+    plot_score_freq("t20", t20_linearised_score, dart=dart, sngl_dbl_tbl="1")
+    plot_score_freq("t20", t20_linearised_score, dart=dart, sngl_dbl_tbl="2")
+    plot_score_freq("t20", t20_linearised_score, dart=dart, sngl_dbl_tbl="3")
+    plot_score_freq("t20", t20_linearised_score, dart=dart, sngl_dbl_tbl="1, 2")
+    plot_score_freq("t20", t20_linearised_score, dart=dart, sngl_dbl_tbl="1, 3")
+    plot_score_freq("t20", t20_linearised_score, dart=dart, sngl_dbl_tbl="2, 3")
+    plot_score_freq("t20", t20_linearised_score, dart=dart, sngl_dbl_tbl="all")
 
-for dart in ["1", "2", "3", "1, 2", "2, 3", "all"]:
+for dart in ["1", "2", "3", "1, 2", "1, 3", "2, 3", "all"]:
     plot_score_freq("t19", t19_linearised_score, dart=dart, sngl_dbl_tbl="1")
     plot_score_freq("t19", t19_linearised_score, dart=dart, sngl_dbl_tbl="2")
     plot_score_freq("t19", t19_linearised_score, dart=dart, sngl_dbl_tbl="3")
     plot_score_freq("t19", t19_linearised_score, dart=dart, sngl_dbl_tbl="1, 2")
+    plot_score_freq("t19", t19_linearised_score, dart=dart, sngl_dbl_tbl="1, 3")
     plot_score_freq("t19", t19_linearised_score, dart=dart, sngl_dbl_tbl="2, 3")
     plot_score_freq("t19", t19_linearised_score, dart=dart, sngl_dbl_tbl="all")
