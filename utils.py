@@ -8,7 +8,7 @@ data_path = f"{os.path.dirname(os.path.realpath(__file__))}/data_store"
 def calculate_total(d1, d2, d3):
     darts = [d1, d2, d3]
     if 'Bull' in darts:
-        darts[darts.index('Bull')] = 50
+        darts[darts.index('Bull')] = '50'
     darts = [convert_score(i) for i in darts]
     return sum([int(i) for i in darts])
 
