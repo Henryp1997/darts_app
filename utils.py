@@ -93,7 +93,7 @@ def calc_session_3_dart_avg(n_visits, running_total):
 def calc_alltime_3_dart_avg(n_visits, n_visits_all, running_total, alltime_total):
     return (int(alltime_total) + int(running_total)) / (int(n_visits_all) + int(n_visits) + 1)
 
-def delete_last_entry_in_file(target):
+def delete_last_entry_in_file_experimental(target):
     csv_file = f"{data_path}/{target}_practice.csv"
     with open(csv_file, "r+", encoding="utf-8") as file:
 
@@ -124,3 +124,22 @@ def delete_last_entry_in_file(target):
         if target == 't20':
             file.seek(pos - 1, os.SEEK_SET)
             file.truncate()
+    
+def delete_last_entry_in_file(target):
+    csv_file = f"{data_path}/{target}_practice"
+    with open(f'{csv_file}.csv', "r") as f:
+        lines = f.readlines()
+    
+    f.close()
+
+    open(f'{csv_file}.csv', 'w').close()
+
+    with open(f'{csv_file}.csv', 'a') as g:
+        for i, line in enumerate(lines):
+            if '/' in line or 'Timestamp' in line: # line not empty
+                try:
+                    if '/' not in lines[i + 1]:
+                        break
+                except:
+                    break
+                g.write(line)
