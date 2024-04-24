@@ -87,44 +87,20 @@ def create_3_dart_avg_file(data_path, target):
         f.write("Timestamp,Dart1,Dart2,Dart3,Total")
     f.close()
 
-def calc_session_3_dart_avg(n_visits, running_total):
+def calc_session_3_dart_avg(n_visits, running_total, just_deleted):
+    if just_deleted:
+        try:
+            return int(running_total) / int(n_visits)
+        except ZeroDivisionError:
+            return 0
     return int(running_total) / (int(n_visits) + 1)
 
-def calc_alltime_3_dart_avg(n_visits, n_visits_all, running_total, alltime_total):
+def calc_alltime_3_dart_avg(n_visits, n_visits_all, running_total, alltime_total, just_deleted):
+    if just_deleted:
+        print(n_visits, n_visits_all, running_total, alltime_total)
+        return (int(alltime_total) + int(running_total)) / (int(n_visits_all) + int(n_visits))
     return (int(alltime_total) + int(running_total)) / (int(n_visits_all) + int(n_visits) + 1)
 
-def delete_last_entry_in_file_experimental(target):
-    csv_file = f"{data_path}/{target}_practice.csv"
-    with open(csv_file, "r+", encoding="utf-8") as file:
-
-        # move the pointer (similar to a cursor in a text editor) to the end of the file
-        file.seek(0, os.SEEK_END)
-
-        # this code means the following code skips the very last character in the file -
-        # i.e. in the case the last line is null we delete the last line
-        # and the penultimate one
-        pos = file.tell() - 1
-
-        # read each character in the file one at a time from the penultimate
-        # character going backwards, searching for a newline character
-        # if we find a new line, exit the search
-        while pos > 0 and file.read(1) != "\n":
-            pos -= 1
-            file.seek(pos, os.SEEK_SET)
-
-        # so long as we're not at the start of the file, delete all the characters ahead
-        # of this position
-        if pos > 0:
-            file.seek(pos, os.SEEK_SET)
-            file.truncate()
-
-        # now remove empty line at the end of file. No idea why but this seems to only
-        # be necessary for the T20 file. When done on the T19 file it removes the last
-        # digit from the total score
-        if target == 't20':
-            file.seek(pos - 1, os.SEEK_SET)
-            file.truncate()
-    
 def delete_last_entry_in_file(target):
     csv_file = f"{data_path}/{target}_practice"
     with open(f'{csv_file}.csv', "r") as f:
@@ -133,13 +109,11 @@ def delete_last_entry_in_file(target):
     f.close()
 
     open(f'{csv_file}.csv', 'w').close()
-
     with open(f'{csv_file}.csv', 'a') as g:
         for i, line in enumerate(lines):
             if '/' in line or 'Timestamp' in line: # line not empty
                 try:
-                    if '/' not in lines[i + 1]:
-                        break
-                except:
-                    break
+                    x = lines[i + 1]
+                except IndexError:
+                    return line.strip("\n").split(",")[-1]
                 g.write(line)

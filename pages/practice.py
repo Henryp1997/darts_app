@@ -28,6 +28,7 @@ def layout(target=None):
             html.Div("0", id="running_total", style={"display": "none"}),
             html.Div("0", id="n_visits_alltime", style={"display": "none"}),
             html.Div("0", id="all_time_total", style={"display": "none"}),
+            html.Div(id="recalculate_avgs", style={"display": "none"}),
             html.Div(style={"height": "1rem"}),
             
             # main game window
@@ -225,34 +226,62 @@ def enable_confirm_btn(dart_3, dart_1, dart_2):
     Output("3_dart_avg_current", "children", allow_duplicate=True),
     Output("n_visits", "children", allow_duplicate=True),
     Input("running_total", "children"),
+    State("recalculate_avgs", "children"),
     State("all_time_total", "children"),
     State("n_visits", "children"),
     State("n_visits_alltime", "children"),
     prevent_initial_call=True
 )
-def record_3_dart_avg(running_total, alltime_total, n_visits_current, n_visits_all):
+def record_3_dart_avg(running_total, recalc_avgs, alltime_total, n_visits_current, n_visits_all):
+    trigger = dash.callback_context.triggered[0]['prop_id']
+    n_visits_return = str(int(n_visits_current) + 1)
+    just_deleted = False
+    if recalc_avgs == "yes":
+        n_visits_return = nop
+        just_deleted = True
+
     # calculate current session average
-    new_curr_avg = calc_session_3_dart_avg(n_visits_current, running_total)
+    new_curr_avg = calc_session_3_dart_avg(n_visits_current, running_total, just_deleted)
+    new_curr_avg = float("%.2f" % new_curr_avg)
 
     # calculate all time average
-    new_alltime_avg = calc_alltime_3_dart_avg(n_visits_current, n_visits_all, running_total, alltime_total)
-
-    return float("%.2f" % new_alltime_avg), float("%.2f" % new_curr_avg), str(int(n_visits_current) + 1)
+    new_alltime_avg = calc_alltime_3_dart_avg(n_visits_current, n_visits_all, running_total, alltime_total, just_deleted)
+    new_alltime_avg = float("%.2f" % new_alltime_avg)
+    
+    return new_alltime_avg, new_curr_avg, n_visits_return
 
 @callback(
     Output("del_last_score_window", "style"),
     Output("main_game_window", "style"),
+    Output("n_visits_alltime", "children", allow_duplicate=True),
+    Output("all_time_total", "children", allow_duplicate=True),
+    Output("n_visits", "children", allow_duplicate=True),
+    Output("running_total", "children", allow_duplicate=True),
+    Output("recalculate_avgs", "children"),
     Input("btn_del_last", "n_clicks"),
     Input("btn_del_last_NO", "n_clicks"),
     Input("btn_del_last_YES", "n_clicks"),
+    State("n_visits", "children"),
+    State("n_visits_alltime", "children"),
+    State("running_total", "children"),
+    State("all_time_total", "children"),
     State("title", "children"),
     prevent_initial_call=True
 )
-def open_delete_score_window(n1, n2, n3, title):
+def open_delete_score_window(n1, n2, n3, n_visits, n_visits_all, running_total, alltime_total, title):
     trigger = dash.callback_context.triggered[0]['prop_id']
     if 'NO' in trigger:
-        return {"display": "none"}, {}
+        return {"display": "none"}, {}, nop, nop, nop, nop, "no"
+    
     if 'YES' in trigger:
-        delete_last_entry_in_file(target=titles_rev[title])
-        return {"display": "none"}, {}
-    return {"margin-left": "2.5rem"}, {"display": "none"}
+        last_score = int(delete_last_entry_in_file(target=titles_rev[title]))
+        if int(n_visits) == 0:
+            n_visits_all = str(int(n_visits_all) - 1)
+            alltime_total = str(int(alltime_total) - last_score)
+            return {"display": "none"}, {}, n_visits_all, alltime_total, "0", "0", "yes"
+
+        n_visits = str(int(n_visits) - 1)
+        running_total = str(int(running_total) - last_score)
+        return {"display": "none"}, {}, nop, nop, n_visits, running_total, "yes"
+
+    return {"margin-left": "2.5rem"}, {"display": "none"}, nop, nop, nop, nop, "no"
