@@ -32,10 +32,10 @@ def write_darts_to_file(d1, d2, d3, target):
 
     with open(csv_file, "a") as f:
         if target != "bull":
-            f.write(f"\n{now},{new_darts[0]},{new_darts[1]},{new_darts[2]},{total}")
+            f.write(f"{now},{new_darts[0]},{new_darts[1]},{new_darts[2]},{total}\n")
         else:
             # don't care about total for bullseye practice
-            f.write(f"\n{now},{new_darts[0]},{new_darts[1]},{new_darts[2]}")
+            f.write(f"{now},{new_darts[0]},{new_darts[1]},{new_darts[2]}\n")
 
 def read_3_dart_avg(target, avg=True):
     with open(f"{data_path}/{target}_3_dart_avg.txt", "r") as f:
