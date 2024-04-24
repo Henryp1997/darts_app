@@ -97,7 +97,6 @@ def calc_session_3_dart_avg(n_visits, running_total, just_deleted):
 
 def calc_alltime_3_dart_avg(n_visits, n_visits_all, running_total, alltime_total, just_deleted):
     if just_deleted:
-        print(n_visits, n_visits_all, running_total, alltime_total)
         return (int(alltime_total) + int(running_total)) / (int(n_visits_all) + int(n_visits))
     return (int(alltime_total) + int(running_total)) / (int(n_visits_all) + int(n_visits) + 1)
 
