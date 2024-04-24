@@ -29,64 +29,86 @@ def layout(target=None):
             html.Div("0", id="n_visits_alltime", style={"display": "none"}),
             html.Div("0", id="all_time_total", style={"display": "none"}),
             html.Div(style={"height": "1rem"}),
-            html.Div([
-                html.Div(style={"height": "0.5rem"}),
-                html.Div("..", style={"color": "black", "display": "inline-block"}),
-                html.Div("Darts:", style={"color": "white", "display": "inline-block"}),
-                html.Div("......", style={"color": "black", "display": "inline-block"}),
-                html.Div("_____", id="dart_1", style={"color": "white", "display": "inline-block"}),
-                html.Div("......", style={"color": "black", "display": "inline-block"}),
-                html.Div("_____", id="dart_2", style={"color": "white", "display": "inline-block"}),
-                html.Div("......", style={"color": "black", "display": "inline-block"}),
-                html.Div("_____", id="dart_3", style={"color": "white", "display": "inline-block"}),
-                html.Div(style={"height": "0.5rem"}),
-            ], style={"border": "2px solid #fff"}),
-            html.Div(style={"height": "0.5rem"}),
-            html.Div([
-                html.Div(style={"height": "0.5rem"}),
-                html.Div("..", style={"color": "black", "display": "inline-block"}),
-                html.Div("3-dart average (current session):", style={"color": "white", "display": "inline-block"}),
-                html.Div("......", style={"color": "black", "display": "inline-block"}),
-                html.Div("_____", id="3_dart_avg_current", style={"color": "white", "display": "inline-block"}),
-                html.Div(style={"height": "0.5rem"}),
-            ], style={"border": "2px solid #fff"}),
-            html.Div(style={"height": "0.5rem"}),
-            html.Div([
-                html.Div(style={"height": "0.5rem"}),
-                html.Div("..", style={"color": "black", "display": "inline-block"}),
-                html.Div("3-dart average (all time):", style={"color": "white", "display": "inline-block"}),
-                html.Div("......", style={"color": "black", "display": "inline-block"}),
-                html.Div("_____", id="3_dart_avg", style={"color": "white", "display": "inline-block"}),
-                html.Div(style={"height": "0.5rem"}),
-            ], style={"border": "2px solid #fff"}),
-            html.Div(style={"height": "0.5rem"}),
+            
+            # main game window
             html.Div([
                 html.Div([
+                    html.Div(style={"height": "0.5rem"}),
+                    html.Div("..", style={"color": "black", "display": "inline-block"}),
+                    html.Div("Darts:", style={"color": "white", "display": "inline-block"}),
+                    html.Div("......", style={"color": "black", "display": "inline-block"}),
+                    html.Div("_____", id="dart_1", style={"color": "white", "display": "inline-block"}),
+                    html.Div("......", style={"color": "black", "display": "inline-block"}),
+                    html.Div("_____", id="dart_2", style={"color": "white", "display": "inline-block"}),
+                    html.Div("......", style={"color": "black", "display": "inline-block"}),
+                    html.Div("_____", id="dart_3", style={"color": "white", "display": "inline-block"}),
+                    html.Div(style={"height": "0.5rem"}),
+                ], style={"border": "2px solid #fff"}),
+                html.Div(style={"height": "0.5rem"}),
+                html.Div([
+                    html.Div(style={"height": "0.5rem"}),
+                    html.Div("..", style={"color": "black", "display": "inline-block"}),
+                    html.Div("3-dart average (current session):", style={"color": "white", "display": "inline-block"}),
+                    html.Div("......", style={"color": "black", "display": "inline-block"}),
+                    html.Div("_____", id="3_dart_avg_current", style={"color": "white", "display": "inline-block"}),
+                    html.Div(style={"height": "0.5rem"}),
+                ], style={"border": "2px solid #fff"}),
+                html.Div(style={"height": "0.5rem"}),
+                html.Div([
+                    html.Div(style={"height": "0.5rem"}),
+                    html.Div("..", style={"color": "black", "display": "inline-block"}),
+                    html.Div("3-dart average (all time):", style={"color": "white", "display": "inline-block"}),
+                    html.Div("......", style={"color": "black", "display": "inline-block"}),
+                    html.Div("_____", id="3_dart_avg", style={"color": "white", "display": "inline-block"}),
+                    html.Div(style={"height": "0.5rem"}),
+                ], style={"border": "2px solid #fff"}),
+                html.Div(style={"height": "0.5rem"}),
+                html.Div([
                     html.Div([
-                        *[html.Button(f"{i}", id=f"btn_{i}") for i in range(1, 6)]
-                    ]),
-                    html.Div([
-                        *[html.Button(f"{i}", id=f"btn_{i}") for i in range(6, 11)]
-                    ]),
-                    html.Div([
-                        *[html.Button(f"{i}", id=f"btn_{i}") for i in range(11, 16)]
-                    ]),
-                    html.Div([
-                        *[html.Button(f"{i}", id=f"btn_{i}") for i in range(16, 21)]                        
-                    ]),
-                    html.Div([
-                        html.Button("25", id="btn_25"),
-                        html.Button("Bull", id="btn_bull"),
-                        html.Button("Miss", id="btn_miss"),
-                    ]),
-                    html.Div([
-                        html.Button("Double", id="btn_double", className="green_button", style={"width": "7.05rem"}),
-                        html.Button("Treble", id="btn_treble", className="green_button", style={"width": "7.05rem"}),
-                        html.Button("⬅", id="btn_backspace", className="backspace_button"),
-                        html.Button("\u2714", id="btn_confirm", disabled=True, className="green_button")
+                        html.Div([
+                            *[html.Button(f"{i}", id=f"btn_{i}") for i in range(1, 6)]
+                        ]),
+                        html.Div([
+                            *[html.Button(f"{i}", id=f"btn_{i}") for i in range(6, 11)]
+                        ]),
+                        html.Div([
+                            *[html.Button(f"{i}", id=f"btn_{i}") for i in range(11, 16)]
+                        ]),
+                        html.Div([
+                            *[html.Button(f"{i}", id=f"btn_{i}") for i in range(16, 21)]                        
+                        ]),
+                        html.Div([
+                            html.Button("25", id="btn_25"),
+                            html.Button("Bull", id="btn_bull"),
+                            html.Button("Miss", id="btn_miss"),
+                            html.Button("Delete last score", id="btn_del_last", className="del_last_score_btn")
+                        ]),
+                        html.Div([
+                            html.Button("Double", id="btn_double", className="green_button", style={"width": "7.05rem"}),
+                            html.Button("Treble", id="btn_treble", className="green_button", style={"width": "7.05rem"}),
+                            html.Button("⬅", id="btn_backspace", className="backspace_button"),
+                            html.Button("\u2714", id="btn_confirm", disabled=True, className="green_button")
+                        ]),
                     ])
-                ])
-            ]),
+                ]),
+
+            ], id="main_game_window"),
+
+            # delete last score window
+            html.Div(style={"height": "6rem"}),
+            html.Div([
+                html.Div([
+                    html.Div(style={"height": "1rem"}),
+                    html.Div("Delete last score saved in the database?"),
+                    html.Div([
+                            html.Button("NO", id="btn_del_last_NO", className="backspace_button"),
+                            html.Button("YES", id="btn_del_last_YES", className="green_button"),
+                            html.Div(style={"height": "0.5rem"}),
+                        ])
+                    ],
+                    style={"width": "90%", "font-size": "2rem", "color": "white", "border": "2px solid #888888", "border-radius": "1rem", "background-color": "#444444", "text-align": "center"}
+                )
+            ], id="del_last_score_window", style={"display": "none"})
         ])
 
 ### CALLBACKS
@@ -216,3 +238,21 @@ def record_3_dart_avg(running_total, alltime_total, n_visits_current, n_visits_a
     new_alltime_avg = calc_alltime_3_dart_avg(n_visits_current, n_visits_all, running_total, alltime_total)
 
     return float("%.2f" % new_alltime_avg), float("%.2f" % new_curr_avg), str(int(n_visits_current) + 1)
+
+@callback(
+    Output("del_last_score_window", "style"),
+    Output("main_game_window", "style"),
+    Input("btn_del_last", "n_clicks"),
+    Input("btn_del_last_NO", "n_clicks"),
+    Input("btn_del_last_YES", "n_clicks"),
+    State("title", "children"),
+    prevent_initial_call=True
+)
+def open_delete_score_window(n1, n2, n3, title):
+    trigger = dash.callback_context.triggered[0]['prop_id']
+    if 'NO' in trigger:
+        return {"display": "none"}, {}
+    if 'YES' in trigger:
+        delete_last_entry_in_file(target=titles_rev[title])
+        return {"display": "none"}, {}
+    return {"margin-left": "2.5rem"}, {"display": "none"}

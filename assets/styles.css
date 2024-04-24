@@ -6,9 +6,10 @@ button {
     margin-right: 0.35rem;
     margin-top: 0.35rem;
     width: 4.6rem;
-    height: 5rem;
+    height: 4.6rem;
     justify-content: center;
     background-color: #42577d;
+    /* background-color: #161d2a; */
     color: white;
     border-radius: 10px;
     border-bottom: 5px solid #333333;
@@ -67,6 +68,19 @@ button:active {
     border-right: 5px solid #e34040;
     border-top: 5px solid #8d2b2b;
     border-left: 5px solid #8d2b2b;
+}
+
+.del_last_score_btn {
+    font-size: 1rem;
+    width: 9rem;
+    height: 3rem;
+    background-color: #000;
+    border-color: #000
+}
+
+.del_last_score_btn:active {
+    border-color: #000;
+    color: white
 }
 
 .home_heading {
