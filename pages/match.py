@@ -14,7 +14,12 @@ def layout(start=None):
     if start not in ("301", "501"):
         return html.Div("404", style={"color": "white", "font-size": "2rem"})
     return html.Div([
-            html.Div("0", id="n_visits", style={"display": "none"}),
+            html.Div("0", id="n_visits_p1", style={"display": "none"}),
+            html.Div("0", id="n_visits_p2", style={"display": "none"}),
+            html.Div("0", id="running_total_p1", style={"display": "none"}),
+            html.Div("0", id="running_total_p2", style={"display": "none"}),
+            html.Div("0", id="3_dart_avg_p1", style={"display": "none"}),
+            html.Div("0", id="3_dart_avg_p2", style={"display": "none"}),
             html.Div(id="player_started_store", style={"display": "none"}),
             html.Div(id="start_score", style={"display": "none"}),
             # init div
@@ -70,18 +75,6 @@ def layout(start=None):
                 ], style={"border": "2px solid #fff", "border-top": "none"}),
 
                 html.Div(style={"height": "0.5rem"}),
-                html.Div([
-                    html.Div(style={"height": "0.5rem"}),
-                    html.Div("..", style={"color": "black", "display": "inline-block"}),
-                    html.Div("Darts:", id="darts_heading", style={"color": "white", "display": "inline-block"}),
-                    html.Div("......", style={"color": "black", "display": "inline-block"}),
-                    html.Div("_____", id="dart_1_match", style={"color": "white", "display": "inline-block"}),
-                    html.Div("......", style={"color": "black", "display": "inline-block"}),
-                    html.Div("_____", id="dart_2_match", style={"color": "white", "display": "inline-block"}),
-                    html.Div("......", style={"color": "black", "display": "inline-block"}),
-                    html.Div("_____", id="dart_3_match", style={"color": "white", "display": "inline-block"}),
-                    html.Div(style={"height": "0.5rem"}),
-                ], id="darts_view", style={"border": "2px solid #fff", "width": "16rem", "display": "inline-block"}),
                 
                 html.Div([
                     html.Div(style={"height": "0.5rem"}),
@@ -92,40 +85,9 @@ def layout(start=None):
                     html.Div(style={"height": "0.5rem"}),
                 ], id="numpad_view", style={"border": "2px solid #fff", "width": "16rem", "display": "inline-block"}),
 
-                html.Div([
-                    html.Div(dbc.Checkbox(id="numpad_toggle"), style={"display": "inline-block", "margin-left": "1rem"}),
-                    html.Div("Numpad", style={"display": "inline-block"}),
-                ], style={"color": "white", "display": "inline-block"}),
-
                 html.Div(style={"height": "0.5rem"}),
                 html.Div([
                     html.Div([
-                        html.Div([
-                            html.Div([
-                                *[html.Button(f"{i}", id=f"btn_{i}_match") for i in range(1, 6)]
-                            ]),
-                            html.Div([
-                                *[html.Button(f"{i}", id=f"btn_{i}_match") for i in range(6, 11)]
-                            ]),
-                            html.Div([
-                                *[html.Button(f"{i}", id=f"btn_{i}_match") for i in range(11, 16)]
-                            ]),
-                            html.Div([
-                                *[html.Button(f"{i}", id=f"btn_{i}_match") for i in range(16, 21)]                        
-                            ]),
-                            html.Div([
-                                html.Button("25", id="btn_25_match"),
-                                html.Button("Bull", id="btn_bull_match"),
-                                html.Button("Miss", id="btn_miss_match"),
-                            ]),
-                            html.Div([
-                                html.Button("Double", id="btn_double_match", className="green_button", style={"width": "7.05rem"}),
-                                html.Button("Treble", id="btn_treble_match", className="green_button", style={"width": "7.05rem"}),
-                                html.Button("⬅", id="btn_backspace_match", className="backspace_button"),
-                                html.Button("\u2714", id="btn_confirm_match", disabled=True, className="green_button")
-                            ])
-                        ], id="button_display"),
-
                         # NUMPAD INPUT MODE
                         html.Div([
                             html.Div([
@@ -148,17 +110,32 @@ def layout(start=None):
                                     html.Button("\u2714", id="btn_confirm_numpad", disabled=True, className="green_button")
                                 ]),
                             ], id="numpad_background", style={"background-color": "#161d2a"}),
-                        ], id="numpad_display", style={"display": "none"}),
+                        ], id="numpad_display"),
                     ])
                 ]),
-            ], id="game_screen", style={"display": "none"})  
+            ], id="game_screen", style={"display": "none"}),
+
+            # CONFIRM DOUBLE CHECKOUT DIV
+            html.Div(style={"height": "5rem"}),
+            html.Div([
+                html.Div([
+                    html.Div("Checkout! Correctly finished on double?"),
+                    html.Div([
+                            html.Button("NO", id="checkout_double_NO", className="backspace_button"),
+                            html.Button("YES", id="checkout_double_YES", className="green_button"),
+                            html.Div(style={"height": "0.5rem"}),
+                        ])
+                    ],
+                    style={"margin-left": "1rem", "width": "90%", "font-size": "2rem", "color": "white", "border": "2px solid #888888", "border-radius": "1rem", "background-color": "#444444", "text-align": "center"}
+                )
+            ], id="checkout_double_div", style={"display": "none"})
         ])
 
 ### CALLBACKS
 # init screen
 @callback(
     Output("start_score", "children"),
-    Input("btn_1_match", "n_clicks"),
+    Input("btn_0_numpad", "n_clicks"), # need to use an input object
     State("p1_score", "children")
 )
 def store_start_score(n, score):
@@ -215,12 +192,11 @@ def init_player_started_value(n, choice):
     Output("game_screen", "style"),
     Output("init_screen", "style"),
     Input("player_started_store", "children"),
-    Input("btn_confirm_match", "n_clicks"),
     Input("btn_confirm_numpad", "n_clicks"),
     State("p1_name", "style"),
     prevent_initial_call=True
 )
-def init_screen_and_player(player_started, n_match, n_numpad, p1_name_style):
+def init_screen_and_player(player_started, n_numpad, p1_name_style):
     name_style = {"font-size": "2rem", "color": "white", "display": "inline-block"}
     score_style = {"font-size": "2rem", "color": "white", "display": "inline-block"}
     avg_style = {"font-size": "1rem", "color": "white", "display": "inline-block"}
@@ -240,161 +216,7 @@ def init_screen_and_player(player_started, n_match, n_numpad, p1_name_style):
         return name_style, name_style_grey, score_style, score_style_grey, avg_style, avg_style, avg_style_grey, avg_style_grey, {}, {"display": "none"}
     return name_style_grey, name_style, score_style_grey, score_style, avg_style_grey, avg_style_grey, avg_style, avg_style, {}, {"display": "none"}
 
-# main game
-@callback(
-    *[Output(f"btn_{i}_match", "children") for i in range(1, 21)],
-    Input("btn_1_match", "children"),
-    Input("btn_double_match", "n_clicks"),
-    Input("btn_treble_match", "n_clicks"),
-    *[Input(f"btn_{i}_match", "n_clicks") for i in range(1, 21)],
-    prevent_initial_call=True
-)
-def double_treble_text(btn_1_text, n_double, n_treble, *btns):
-    trigger = dash.callback_context.triggered[0]['prop_id']
-    if "double" in trigger:
-        if "D" in btn_1_text:
-            return [f"{i}" for i in range(1, 21)]
-        return [f"D{i}" for i in range(1, 21)]
-    elif "treble" in trigger:
-        if "T" in btn_1_text:
-            return [f"{i}" for i in range(1, 21)]
-        return [f"T{i}" for i in range(1, 21)]
-      
-    # below code executed if one of the number buttons triggered this callback
-    # just returns the button texts to non double or treble after each input
-    return [f"{i}" for i in range(1, 21)]
-
-@callback(
-    Output("dart_1_match", "children"),
-    Output("dart_2_match", "children"),
-    Output("dart_3_match", "children"),
-    *[Input(f"btn_{i}_match", "n_clicks") for i in range(1, 21)],
-    Input("btn_25_match", "n_clicks"),
-    Input("btn_bull_match", "n_clicks"),
-    Input("btn_miss_match", "n_clicks"),
-    *[State(f"btn_{i}_match", "children") for i in range(1, 21)],
-    State("dart_1_match", "children"),
-    State("dart_2_match", "children"),
-    State("dart_3_match", "children"),
-    prevent_initial_call=True
-)
-def record_thrown_dart(*args):
-    d1, d2, d3 = args[-3:]
-    if d3 != "_____":
-        return nop, nop, nop
-    trigger = dash.callback_context.triggered[0]['prop_id']
-    btn_names = args[23:-3]
-    
-    value = trigger.split("btn_")[1].split(".n_clicks")[0]
-    return record_dart_in_correct_place(value, btn_names, d1, d2)
-    
-@callback(
-    Output("dart_1_match", "children", allow_duplicate=True),
-    Output("dart_2_match", "children", allow_duplicate=True),
-    Output("dart_3_match", "children", allow_duplicate=True),
-    Input("btn_confirm_match", "n_clicks"),
-    State("dart_1_match", "children"),
-    State("dart_2_match", "children"),
-    State("dart_3_match", "children"),
-    prevent_initial_call=True
-)
-def record_all_3_darts(n_confirm, d1, d2, d3):
-    return "_____", "_____", "_____"
-
-@callback(
-    Output("dart_1_match", "children", allow_duplicate=True),
-    Output("dart_2_match", "children", allow_duplicate=True),
-    Output("dart_3_match", "children", allow_duplicate=True),
-    Input("btn_backspace_match", "n_clicks"),
-    State("dart_1_match", "children"),
-    State("dart_2_match", "children"),
-    State("dart_3_match", "children"),
-    prevent_initial_call=True
-)
-def delete_dart_input(n_backspace, d1, d2, d3):
-    if d3 != "_____":
-        return nop, nop, "_____"
-    if d2 != "_____":
-        return nop, "_____", "_____"
-    return "_____", "_____", "_____"
-
-@callback(
-    Output("btn_confirm_match", "disabled"),
-    Input("dart_3_match", "children"),
-    State("dart_1_match", "children"),
-    State("dart_2_match", "children"),
-    prevent_initial_call=True
-)
-def enable_confirm_btn(dart_3, dart_1, dart_2):
-    return dart_3 == "_____"
-
-@callback(
-    Output("p1_score", "children"),
-    Output("p2_score", "children"),
-    Output("player_started_store", "children", allow_duplicate=True),
-    Input("btn_confirm_match", "n_clicks"),
-    State("dart_1_match", "children"),
-    State("dart_2_match", "children"),
-    State("dart_3_match", "children"),
-    State("p1_name", "style"),
-    State("p1_score", "children"),
-    State("p2_score", "children"),
-    State("player_started_store", "children"),
-    State("start_score", "children"),
-    prevent_initial_call=True
-)
-def subtract_score(n_confirm, d1, d2, d3, p1_name_style, p1_score, p2_score, player_started, start_score):
-    darts = [d1, d2, d3]
-    new_darts = []
-    for i, dart in enumerate(darts):
-        if dart == "Bull":
-            new_darts.append(50)
-        elif 'T' in dart:
-            new_darts.append(3 * int(dart.split("T")[1]))
-        elif 'D' in dart:
-            new_darts.append(2 * int(dart.split("D")[1]))
-        else:
-            new_darts.append(int(dart))
-
-    next_to_start = '1'
-    if player_started == '1':
-        next_to_start = '2'
-
-    total = sum(new_darts)
-    if p1_name_style['color'] == "white":
-        for i, dart in enumerate(darts):
-            if "D" in dart:
-                total_thrown_inc_dbl = 2 * int(dart.split("D")[1]) + new_darts[i - 1] + new_darts[i - 2]
-                if total_thrown_inc_dbl == int(p1_score):
-                    return start_score, start_score, next_to_start
-
-        new_p1_score = str(int(p1_score) - total) if total < int(p1_score) - 1 else p1_score
-        new_p2_score = p2_score
-    else:
-        for i, dart in enumerate(darts):
-            if "D" in dart:
-                total_thrown_inc_dbl = 2 * int(dart.split("D")[1]) + new_darts[i - 1] + new_darts[i - 2]
-                if total_thrown_inc_dbl == int(p2_score):
-                    return start_score, start_score, next_to_start
-        new_p1_score = p1_score
-        new_p2_score = str(int(p2_score) - total) if total < int(p2_score) - 1 else p2_score
-    
-    return new_p1_score, new_p2_score, nop
-
-### NUMPAD CALLBACKS
-@callback(
-    Output("numpad_display", "style"),
-    Output("button_display", "style"),
-    Output("numpad_view", "style"),
-    Output("darts_view", "style"),
-    Input("numpad_toggle", "value")
-)
-def toggle_input_mode(toggled):
-    darts_record_style = {"border": "2px solid #fff", "width": "16rem", "display": "inline-block"}
-    if toggled:
-        return {}, {"display": "none"}, darts_record_style, {'display': 'none'}
-    return {"display": "none"}, {}, {"display": "none"}, darts_record_style
-
+### MAIN GAME
 @callback(
     Output("numpad_score", "children"),
     Output("btn_confirm_numpad", "disabled"),
@@ -427,96 +249,68 @@ def record_score(*args):
     return score, False
 
 @callback(
+    Output("3_dart_avg_p1", "children"),
+    Output("n_visits_p1", "children"),
+    Output("3_dart_avg_p2", "children"),
+    Output("n_visits_p2", "children"),
+
     Output("numpad_score", "children", allow_duplicate=True),
     Output("p1_score", "children", allow_duplicate=True),
     Output("p2_score", "children", allow_duplicate=True),
     Output("player_started_store", "children", allow_duplicate=True),
+    Output("checkout_double_div", "style"),
+    Output("game_screen", "style", allow_duplicate=True),
+    
     Input("btn_confirm_numpad", "n_clicks"),
+
     State("p1_name", "style"),
     State("p1_score", "children"),
     State("p2_score", "children"),
     State("numpad_score", "children"),
+    prevent_initial_call=True
+)
+def numpad_subtract_score(n, p1_name_style, p1_score, p2_score, numpad_score):
+    numpad_score = int(numpad_score)
+    if p1_name_style['color'] == "white":
+        if verify_checkout_numpad(int(numpad_score), int(p1_score)):
+            return nop, nop, nop, nop, nop, nop, nop, nop, {}, {'display': 'none'}
+
+        new_p1_score = calc_remaining_score_numpad(int(p1_score), int(numpad_score))
+        new_p2_score = p2_score
+    else:
+        if verify_checkout_numpad(int(numpad_score), int(p2_score)):
+            return nop, nop, nop, nop, nop, nop, nop, nop, {}, {'display': 'none'}
+        
+        new_p1_score = p1_score
+        new_p2_score = calc_remaining_score_numpad(int(p2_score), int(numpad_score))
+
+    return nop, nop, nop, nop, "_____", new_p1_score, new_p2_score, nop, {'display': 'none'}, {}
+
+@callback(
+    Output("numpad_score", "children", allow_duplicate=True),
+    Output("p1_score", "children", allow_duplicate=True),
+    Output("p2_score", "children", allow_duplicate=True),
+    Output("player_started_store", "children", allow_duplicate=True),
+    Output("checkout_double_div", "style", allow_duplicate=True),
+    Output("game_screen", "style", allow_duplicate=True),
+
+    Input("checkout_double_NO", "n_clicks"),
+    Input("checkout_double_YES", "n_clicks"),
+
+    State("p1_name", "style"),
     State("player_started_store", "children"),
     State("start_score", "children"),
     prevent_initial_call=True
 )
-def numpad_subtract_score(n, p1_name_style, p1_score, p2_score, numpad_score, player_started, start_score):
+def open_double_check_div(n_NO, n_YES, p1_name_style, player_started, start_score):
+    trigger = dash.callback_context.triggered[0]['prop_id']
     next_to_start = '1'
     if player_started == '1':
         next_to_start = '2'
 
-    numpad_score = int(numpad_score)
-    if p1_name_style['color'] == "white":
-        if numpad_score == int(p1_score) and int(p1_score) <= 170:
-            return "_____", start_score, start_score, next_to_start
-
-        new_p1_score = str(int(p1_score) - numpad_score) if numpad_score < int(p1_score) - 1 else p1_score
-        new_p2_score = p2_score
-    else:
-        if numpad_score == int(p1_score) and int(p1_score) <= 170:
-            return "_____", start_score, start_score, next_to_start
-
-        new_p1_score = p1_score
-        new_p2_score = str(int(p2_score) - numpad_score) if numpad_score < int(p2_score) - 1 else p2_score
+    # check if player 1 did finish on a double by asking the user
+    if 'NO' in trigger:
+        return "_____", nop, nop, nop, {'display': 'none'}, {}
     
-    return "_____", new_p1_score, new_p2_score, nop
-
-# @callback(
-    
-#     Input("numpad_toggle", "value"),
-#     prevent_initial_call=True
-# )
-# def toggle_darts_view_style(toggled):
-#     div_style = {"border": "2px solid #fff", "width": "16rem", "display": "inline-block"}
-#     div_style_grey = {"border": "2px solid #444", "width": "16rem", "display": "inline-block"}
-#     heading_style = {"color": "white", "display": "inline-block"}
-#     heading_style_grey = {"color": "#444", "display": "inline-block"}
-#     if toggled:
-#         return div_style_grey, *(heading_style_grey,)*4
-#     return div_style, *(heading_style,)*4
-
-# @callback(
-#     Output("3_dart_avg_current", "children"),
-#     Output("n_visits", "children"),
-#     Input("btn_confirm", "n_clicks"),
-#     State("3_dart_avg_current", "children"),
-#     State("n_visits", "children"),
-#     State("dart_1", "children"),
-#     State("dart_2", "children"),
-#     State("dart_3", "children"),
-#     prevent_initial_call=True
-# )
-# def record_3_dart_avg(n_confirm, curr_avg, n_visits, dart_1, dart_2, dart_3):
-#     dart_1 = convert_score(dart_1)
-#     dart_2 = convert_score(dart_2)
-#     dart_3 = convert_score(dart_3)
-
-#     curr_avg = 0 if curr_avg == "_____" else int(curr_avg)
-#     n_visits = int(n_visits)
-#     new_avg = float("%.2f" % (((n_visits * curr_avg) + (dart_1 + dart_2 + dart_3)) / (n_visits + 1)))
-
-#     return new_avg, str(n_visits + 1)
-
-# @callback(
-#     Output("3_dart_avg", "children", allow_duplicate=True),
-#     Input("btn_confirm", "n_clicks"),
-#     State("dart_1", "children"),
-#     State("dart_2", "children"),
-#     State("dart_3", "children"),
-#     State("title", "children"),
-#     prevent_initial_call=True
-# )
-# def record_3_dart_avg_all_time(n_confirm, dart_1, dart_2, dart_3, title):
-#     target = titles_rev[title]
-#     dart_1 = convert_score(dart_1)
-#     dart_2 = convert_score(dart_2)
-#     dart_3 = convert_score(dart_3)
-
-#     n_visits = read_3_dart_avg(target, avg=False)
-#     curr_avg = read_3_dart_avg(target)
-#     new_avg = (((n_visits * curr_avg) + (dart_1 + dart_2 + dart_3)) / (n_visits + 1))
-#     new_avg_2dp = float("%.2f" % new_avg)
-
-#     update_3_dart_avg_file(n_visits + 1, new_avg, target)
-
-#     return new_avg_2dp
+    # YES was pressed
+    return "_____", start_score, start_score, next_to_start, {'display': 'none'}, {}

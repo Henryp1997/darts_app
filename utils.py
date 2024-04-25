@@ -116,3 +116,21 @@ def delete_last_entry_in_file(target):
                 except IndexError:
                     return line.strip("\n").split(",")[-1]
                 g.write(line)
+
+def verify_checkout(darts, formatted_darts, score_remaining):
+    for i, dart in enumerate(darts):
+        if "D" in dart:
+            total_thrown_inc_dbl = 2 * int(dart.split("D")[1]) + formatted_darts[i - 1] + formatted_darts[i - 2]
+            if total_thrown_inc_dbl == int(score_remaining):
+                return True
+    return False
+            
+def verify_checkout_numpad(score_thrown, score_remaining):
+    bogeys = [169, 168, 166, 165, 163, 162, 159]
+    if score_remaining > 170 or score_remaining in bogeys:
+        return False
+    if score_thrown == score_remaining:
+        return True
+    
+def calc_remaining_score_numpad(score, score_thrown):
+    return str(score - score_thrown) if score_thrown < score - 1 else str(score)
