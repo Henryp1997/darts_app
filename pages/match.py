@@ -129,7 +129,21 @@ def layout(start=None):
                     ],
                     className="checkout_box"
                 )
-            ], id="checkout_double_div", style={"display": "none"})
+            ], id="checkout_double_div", style={"display": "none"}),
+
+            # SCORE TOO HIGH POPUP DIV
+            html.Div(style={"height": "5rem"}),
+            html.Div([
+                html.Div([
+                    html.Div("Score not possible!"),
+                    html.Div([
+                            html.Button("OK", id="score_too_high_OK", className="green_button"),
+                            html.Div(style={"height": "0.5rem"}),
+                        ])
+                    ],
+                    className="checkout_box"
+                )
+            ], id="score_too_high_div", style={"display": "none"})
         ])
 
 ### CALLBACKS
@@ -197,12 +211,15 @@ def init_player_started_value(n, choice):
     Input("player_started_store", "children"),
     Input("btn_confirm_numpad", "n_clicks"),
     State("p1_name", "className"),
+    State("numpad_score", "children"),
     prevent_initial_call=True
 )
-def init_screen_and_player(player_started, n_numpad, p1_name_class):
+def init_screen_and_player(player_started, n_numpad, p1_name_class, numpad_score):
     # use this block of code to switch between player focus after entering three darts
     trigger = dash.callback_context.triggered[0]['prop_id']
     if 'confirm' in trigger:
+        if int(numpad_score) > 180:
+            return ((nop,)*10)
         player_started = '1'
         if p1_name_class == "white_text_inline":
             player_started = '2'
@@ -248,12 +265,13 @@ def record_score(*args):
     Output("n_visits_p1", "children"),
     Output("3_dart_avg_p2", "children"),
     Output("n_visits_p2", "children"),
-
-    Output("numpad_score", "children", allow_duplicate=True),
     Output("p1_score", "children", allow_duplicate=True),
     Output("p2_score", "children", allow_duplicate=True),
     Output("player_started_store", "children", allow_duplicate=True),
-    Output("checkout_double_div", "style"),
+    Output("numpad_score", "children", allow_duplicate=True),
+
+    Output("checkout_double_div", "style", allow_duplicate=True),
+    Output("score_too_high_div", "style", allow_duplicate=True),
     Output("game_screen", "style", allow_duplicate=True),
     
     Input("btn_confirm_numpad", "n_clicks"),
@@ -268,13 +286,19 @@ def numpad_subtract_score(n, p1_name_class, p1_score, p2_score, numpad_score):
     numpad_score = int(numpad_score)
     if p1_name_class == "white_text_inline":
         if verify_checkout_numpad(int(numpad_score), int(p1_score)):
-            return nop, nop, nop, nop, nop, nop, nop, nop, {}, {'display': 'none'}
+            return *((nop,)*8), {}, {'display': 'none'}, {'display': 'none'}
+        
+        if int(numpad_score) > 180:
+            return *((nop,)*7), "_____", {'display': 'none'}, {}, {'display': 'none'}
 
         new_p1_score = calc_remaining_score_numpad(int(p1_score), int(numpad_score))
         new_p2_score = p2_score
     else:
         if verify_checkout_numpad(int(numpad_score), int(p2_score)):
-            return nop, nop, nop, nop, nop, nop, nop, nop, {}, {'display': 'none'}
+            return *((nop,)*8), {}, {'display': 'none'}, {'display': 'none'}
+        
+        if int(numpad_score) > 180:
+            return *((nop,)*7), "_____", {'display': 'none'}, {}, {'display': 'none'}
         
         new_p1_score = p1_score
         new_p2_score = calc_remaining_score_numpad(int(p2_score), int(numpad_score))
@@ -308,3 +332,12 @@ def open_double_check_div(n_NO, n_YES, player_started, start_score):
     
     # YES was pressed
     return "_____", start_score, start_score, next_to_start, {'display': 'none'}, {}
+
+@callback(
+    Output("score_too_high_div", "style", allow_duplicate=True),
+    Output("game_screen", "style", allow_duplicate=True),
+    Input("score_too_high_OK", "n_clicks"),
+    prevent_initial_call=True
+)
+def open_double_check_div(n_OK):   
+    return {'display': 'none'}, {}
