@@ -30,12 +30,12 @@ def layout(start=None):
                     html.Div("Choose player to start", style={"font-size": "1.5rem", "text-align": "center"}),
                     html.Div(style={"height": "0.5rem"}),
                     html.Div([
-                        html.Button("Player 1", id="btn_choose_p1", className="green_button", style={"width": "7.05rem", "margin-right": "2rem"}),
-                        html.Button("Player 2", id="btn_choose_p2", className="backspace_button", style={"width": "7.05rem"}),
+                        html.Button("Player 1", id="btn_choose_p1", className="green_button", style={"width": "30%", "margin-right": "5%"}),
+                        html.Button("Player 2", id="btn_choose_p2", className="backspace_button", style={"width": "30%"}),
                     ], style={"text-align": "center"}),
                     html.Div(style={"height": "1rem"}),
                     html.Div([
-                        html.Div("Player 1 starts", id="init_choice_text", style={"display": "inline-block", "margin-right": "1rem"}),
+                        html.Div("Player 1 starts", id="init_choice_text", style={"display": "inline-block", "margin-right": "5%"}),
                         html.Button("\u2714", id="btn_confirm_init"),
                     ], style={"text-align": "center"}),
                     html.Div(style={"height": "1rem"}),
@@ -45,32 +45,32 @@ def layout(start=None):
             html.Div([
                 html.Div([
                     html.Div(style={"height": "0.5rem"}),
-                    html.Div(".", style={"color": "black", "display": "inline-block", "width": "2.2rem"}),
-                    html.Div("Player 1", id="p1_name", style={"font-size": "2rem", "color": "white", "display": "inline-block"}),
-                    html.Div(".", style={"color": "black", "display": "inline-block", "width": "4.4rem"}),
-                    html.Div("Player 2", id="p2_name", style={"font-size": "2rem", "color": "#aaaaaa", "display": "inline-block"}),
+                    html.Div(".", className="black_text_inline_spacer", style={"width": "2.2rem"}),
+                    html.Div("Player 1", id="p1_name", className="white_text_inline", style={"font-size": "2rem"}),
+                    html.Div(".", className="black_text_inline_spacer", style={"width": "4.4rem"}),
+                    html.Div("Player 2", id="p2_name", className="grey_#aaa_text_inline", style={"font-size": "2rem"}),
                     html.Div(style={"height": "0.5rem"}),
                 ], style={"border": "2px solid #fff", "border-bottom": "none"}),
 
                 html.Div([
                     html.Div(style={"height": "0.2rem"}),
-                    html.Div(".", style={"color": "black", "display": "inline-block", "margin-right": "4rem"}),
-                    html.Div(f"{start}", id="p1_score", style={"font-size": "2rem", "color": "white", "display": "inline-block"}),
-                    html.Div(".", style={"color": "black", "display": "inline-block", "margin-right": "8.5rem"}),
-                    html.Div(f"{start}", id="p2_score", style={"font-size": "2rem", "color": "#aaaaaa", "display": "inline-block"}),
+                    html.Div(".", className="black_text_inline_spacer", style={"margin-right": "4rem"}),
+                    html.Div(f"{start}", id="p1_score", className="white_text_inline", style={"font-size": "2rem"}),
+                    html.Div(".", className="black_text_inline_spacer", style={"margin-right": "8.5rem"}),
+                    html.Div(f"{start}", id="p2_score", className="grey_#aaa_text_inline", style={"font-size": "2rem"}),
                     html.Div(style={"height": "0.5rem"}),
                 ], style={"border": "2px solid #fff", "border-top": "none", "border-bottom": "none"}),
 
                 html.Div([
                     html.Div(style={"height": "0.2rem"}),
-                    html.Div(".", style={"color": "black", "display": "inline-block", "margin-right": "1rem"}),
-                    html.Div("Avg. =", id="p1_avg_text", style={"font-size": "1rem", "color": "white", "display": "inline-block"}),
-                    html.Div(".", style={"color": "black", "display": "inline-block", "margin-right": "0.5rem"}),
-                    html.Div("_____", id="p1_avg_value", style={"font-size": "1rem", "color": "white", "display": "inline-block"}),
-                    html.Div(".", style={"color": "black", "display": "inline-block", "margin-right": "6rem"}),
-                    html.Div("Avg. =", id="p2_avg_text", style={"font-size": "1rem", "color": "#aaaaaa", "display": "inline-block"}),
-                    html.Div(".", style={"color": "black", "display": "inline-block", "margin-right": "0.5rem"}),   
-                    html.Div("_____", id="p2_avg_value", style={"font-size": "1rem", "color": "#aaaaaa", "display": "inline-block"}),
+                    html.Div(".", className="black_text_inline_spacer", style={"margin-right": "1rem"}),
+                    html.Div("Avg. =", id="p1_avg_text", className="white_text_inline", style={"font-size": "1rem"}),
+                    html.Div(".", className="black_text_inline_spacer", style={"margin-right": "0.5rem"}),
+                    html.Div("_____", id="p1_avg_value", className="white_text_inline", style={"font-size": "1rem"}),
+                    html.Div(".", className="black_text_inline_spacer", style={"margin-right": "6rem"}),
+                    html.Div("Avg. =", id="p2_avg_text", className="grey_#aaa_text_inline", style={"font-size": "1rem"}),
+                    html.Div(".", className="black_text_inline_spacer", style={"margin-right": "0.5rem"}),   
+                    html.Div("_____", id="p2_avg_value", className="grey_#aaa_text_inline", style={"font-size": "1rem"}),
                     html.Div(style={"height": "0.5rem"}),
                 ], style={"border": "2px solid #fff", "border-top": "none"}),
 
@@ -78,10 +78,10 @@ def layout(start=None):
                 
                 html.Div([
                     html.Div(style={"height": "0.5rem"}),
-                    html.Div("..", style={"color": "black", "display": "inline-block"}),
-                    html.Div("Score:", style={"color": "white", "display": "inline-block"}),
-                    html.Div("......................", style={"color": "black", "display": "inline-block"}),
-                    html.Div("_____", id="numpad_score", style={"color": "white", "display": "inline-block"}),
+                    html.Div("..", className="black_text_inline_spacer"),
+                    html.Div("Score:", className="white_text_inline"),
+                    html.Div("......................", className="black_text_inline_spacer"),
+                    html.Div("_____", id="numpad_score", className="white_text_inline"),
                     html.Div(style={"height": "0.5rem"}),
                 ], id="numpad_view", style={"border": "2px solid #fff", "width": "16rem", "display": "inline-block"}),
 
@@ -92,24 +92,24 @@ def layout(start=None):
                         html.Div([
                             html.Div([
                                 html.Div([
-                                    html.Div(".", style={"width": "4.95rem", "display": "inline-block"}),
-                                    *[html.Button(f"{i}", id=f"btn_{i}_numpad") for i in range(1, 4)]
+                                    html.Div(".", className="numpad_button_spacer"),
+                                    *[html.Button(f"{i}", id=f"btn_{i}_numpad", className="numpad_button") for i in range(1, 4)]
                                 ]),
                                 html.Div([
-                                    html.Div(".", style={"width": "4.95rem", "display": "inline-block"}),
-                                    *[html.Button(f"{i}", id=f"btn_{i}_numpad") for i in range(4, 7)]
+                                    html.Div(".", className="numpad_button_spacer"),
+                                    *[html.Button(f"{i}", id=f"btn_{i}_numpad", className="numpad_button") for i in range(4, 7)]
                                 ]),
                                 html.Div([
-                                    html.Div(".", style={"width": "4.95rem", "display": "inline-block"}),
-                                    *[html.Button(f"{i}", id=f"btn_{i}_numpad") for i in range(7, 10)]
+                                    html.Div(".", className="numpad_button_spacer"),
+                                    *[html.Button(f"{i}", id=f"btn_{i}_numpad", className="numpad_button") for i in range(7, 10)]
                                 ]),
                                 html.Div([
-                                    html.Div(".", style={"width": "4.95rem", "display": "inline-block"}),
-                                    html.Button("0", id=f"btn_0_numpad"),
-                                    html.Button("⬅", id="btn_backspace_numpad", className="backspace_button"),
-                                    html.Button("\u2714", id="btn_confirm_numpad", disabled=True, className="green_button")
+                                    html.Div(".", className="numpad_button_spacer"),
+                                    html.Button("0", id=f"btn_0_numpad", className="numpad_button"),
+                                    html.Button("⬅", id="btn_backspace_numpad", className="backspace_button", style={"width": "25%"}),
+                                    html.Button("\u2714", id="btn_confirm_numpad", disabled=True, className="green_button", style={"width": "25%"})
                                 ]),
-                            ], id="numpad_background", style={"background-color": "#161d2a"}),
+                            ], id="numpad_background", className="numpad_background"),
                         ], id="numpad_display"),
                     ])
                 ]),
@@ -122,11 +122,12 @@ def layout(start=None):
                     html.Div("Checkout! Correctly finished on double?"),
                     html.Div([
                             html.Button("NO", id="checkout_double_NO", className="backspace_button"),
+                            html.Div(".", style={"color": "#444444", "width": "7.5%", "display": "inline-block"}),
                             html.Button("YES", id="checkout_double_YES", className="green_button"),
                             html.Div(style={"height": "0.5rem"}),
                         ])
                     ],
-                    style={"margin-left": "1rem", "width": "90%", "font-size": "2rem", "color": "white", "border": "2px solid #888888", "border-radius": "1rem", "background-color": "#444444", "text-align": "center"}
+                    className="checkout_box"
                 )
             ], id="checkout_double_div", style={"display": "none"})
         ])
@@ -181,40 +182,34 @@ def init_player_started_value(n, choice):
     return '2'
 
 @callback(
-    Output("p1_name", "style"),
-    Output("p2_name", "style"),
-    Output("p1_score", "style"),
-    Output("p2_score", "style"),
-    Output("p1_avg_text", "style"),
-    Output("p1_avg_value", "style"),
-    Output("p2_avg_text", "style"),
-    Output("p2_avg_value", "style"),
+    Output("p1_name", "className"),
+    Output("p1_score", "className"),
+    Output("p1_avg_text", "className"),
+    Output("p1_avg_value", "className"),
+    
+    Output("p2_name", "className"),
+    Output("p2_score", "className"),
+    Output("p2_avg_text", "className"),
+    Output("p2_avg_value", "className"),
+
     Output("game_screen", "style"),
     Output("init_screen", "style"),
     Input("player_started_store", "children"),
     Input("btn_confirm_numpad", "n_clicks"),
-    State("p1_name", "style"),
+    State("p1_name", "className"),
     prevent_initial_call=True
 )
-def init_screen_and_player(player_started, n_numpad, p1_name_style):
-    name_style = {"font-size": "2rem", "color": "white", "display": "inline-block"}
-    score_style = {"font-size": "2rem", "color": "white", "display": "inline-block"}
-    avg_style = {"font-size": "1rem", "color": "white", "display": "inline-block"}
-
-    name_style_grey = {"font-size": "2rem", "color": "#666666", "display": "inline-block"}
-    score_style_grey = {"font-size": "2rem", "color": "#666666", "display": "inline-block"}
-    avg_style_grey = {"font-size": "1rem", "color": "#666666", "display": "inline-block"}
-
+def init_screen_and_player(player_started, n_numpad, p1_name_class):
     # use this block of code to switch between player focus after entering three darts
     trigger = dash.callback_context.triggered[0]['prop_id']
     if 'confirm' in trigger:
         player_started = '1'
-        if p1_name_style['color'] == "white":
+        if p1_name_class == "white_text_inline":
             player_started = '2'
 
     if player_started == '1':
-        return name_style, name_style_grey, score_style, score_style_grey, avg_style, avg_style, avg_style_grey, avg_style_grey, {}, {"display": "none"}
-    return name_style_grey, name_style, score_style_grey, score_style, avg_style_grey, avg_style_grey, avg_style, avg_style, {}, {"display": "none"}
+        return *(("white_text_inline",)*4), *(("grey_aaa_text_inline",)*4), {}, {"display": "none"}
+    return *(("grey_aaa_text_inline",)*4), *(("white_text_inline",)*4), {}, {"display": "none"}
 
 ### MAIN GAME
 @callback(
@@ -263,15 +258,15 @@ def record_score(*args):
     
     Input("btn_confirm_numpad", "n_clicks"),
 
-    State("p1_name", "style"),
+    State("p1_name", "className"),
     State("p1_score", "children"),
     State("p2_score", "children"),
     State("numpad_score", "children"),
     prevent_initial_call=True
 )
-def numpad_subtract_score(n, p1_name_style, p1_score, p2_score, numpad_score):
+def numpad_subtract_score(n, p1_name_class, p1_score, p2_score, numpad_score):
     numpad_score = int(numpad_score)
-    if p1_name_style['color'] == "white":
+    if p1_name_class == "white_text_inline":
         if verify_checkout_numpad(int(numpad_score), int(p1_score)):
             return nop, nop, nop, nop, nop, nop, nop, nop, {}, {'display': 'none'}
 
@@ -297,12 +292,11 @@ def numpad_subtract_score(n, p1_name_style, p1_score, p2_score, numpad_score):
     Input("checkout_double_NO", "n_clicks"),
     Input("checkout_double_YES", "n_clicks"),
 
-    State("p1_name", "style"),
     State("player_started_store", "children"),
     State("start_score", "children"),
     prevent_initial_call=True
 )
-def open_double_check_div(n_NO, n_YES, p1_name_style, player_started, start_score):
+def open_double_check_div(n_NO, n_YES, player_started, start_score):
     trigger = dash.callback_context.triggered[0]['prop_id']
     next_to_start = '1'
     if player_started == '1':

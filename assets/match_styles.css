@@ -1,0 +1,33 @@
+.numpad_button {
+    width: 25%
+}
+
+.checkout_box {
+    margin-left: 1rem;
+    width: 90%;
+    font-size: 2rem;
+    color: white;
+    border: 2px solid #888888;
+    border-radius: 1rem;
+    background-color: #444444;
+    text-align: center
+}
+
+.display_none {
+    display: none
+}
+
+.numpad_background {
+    background-color: #161d2a;
+}
+
+.numpad_button_spacer {
+    width: 12%;
+    color: #161d2a;
+    display: inline-block
+}
+
+.grey_aaa_text_inline {
+    color: #aaaaaa;
+    display: inline-block
+}
