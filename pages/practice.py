@@ -225,7 +225,10 @@ def enable_confirm_btn(dart_3, dart_1, dart_2):
     Output("3_dart_avg", "children", allow_duplicate=True),
     Output("3_dart_avg_current", "children", allow_duplicate=True),
     Output("n_visits", "children", allow_duplicate=True),
+    Output("recalculate_avgs", "children", allow_duplicate=True),
+
     Input("running_total", "children"),
+
     State("recalculate_avgs", "children"),
     State("all_time_total", "children"),
     State("n_visits", "children"),
@@ -248,7 +251,7 @@ def record_3_dart_avg(running_total, recalc_avgs, alltime_total, n_visits_curren
     new_alltime_avg = calc_alltime_3_dart_avg(n_visits_current, n_visits_all, running_total, alltime_total, just_deleted)
     new_alltime_avg = float("%.2f" % new_alltime_avg)
     
-    return new_alltime_avg, new_curr_avg, n_visits_return
+    return new_alltime_avg, new_curr_avg, n_visits_return, "no"
 
 @callback(
     Output("del_last_score_window", "style"),
@@ -258,9 +261,11 @@ def record_3_dart_avg(running_total, recalc_avgs, alltime_total, n_visits_curren
     Output("n_visits", "children", allow_duplicate=True),
     Output("running_total", "children", allow_duplicate=True),
     Output("recalculate_avgs", "children"),
+
     Input("btn_del_last", "n_clicks"),
     Input("btn_del_last_NO", "n_clicks"),
     Input("btn_del_last_YES", "n_clicks"),
+    
     State("n_visits", "children"),
     State("n_visits_alltime", "children"),
     State("running_total", "children"),
