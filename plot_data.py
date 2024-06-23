@@ -16,41 +16,14 @@ def plot_score_freq(target, linearised_score, dart="all", sngl_dbl_tbl="all"):
     sngl_scores = linearised_score
 
     # get thrown darts
-    if dart == "all":
-        all_darts = [str(i) for i in list(df['Dart1']) + list(df['Dart2']) + list(df['Dart3'])]
-    elif "," not in dart:
-        all_darts = [str(i) for i in list(df[f'Dart{dart}'])]
-    else:
-        darts = [i.strip(" ") for i in dart.split(",")]
-        dart = f'{darts[0]}_and_{darts[1]}' # for file name
-        all_darts = [str(i) for i in list(df[f'Dart{darts[0]}']) + list(df[f'Dart{darts[1]}'])]
+    all_sngl, all_dbl, all_tbl = get_all_darts_from_df(df)
+    
+    # get filename of plot given sngl_dbl_tbl string
+    file_name_ext, i_to_skip = get_filename_ext(sngl_dbl_tbl)
 
-    all_sngl = [i for i in all_darts if 'D' not in i and 'T' not in i]
-    all_dbl = [i.strip("D") for i in all_darts if 'D' in i]
-    all_tbl = [i.strip("T") for i in all_darts if 'T' in i]
-
+    # now plot extracted data
     colours = ['blue', 'red', 'green']
     names = ['Singles', 'Doubles', 'Trebles']
-
-    file_name_descriptors = {
-        1: "sngl",
-        2: "dbl",
-        3: "tbl"
-    }
-    if sngl_dbl_tbl == "all":
-        i_to_keep = [1, 2, 3]
-        i_to_skip = []
-    elif "," not in sngl_dbl_tbl:
-        i_to_keep = [int(sngl_dbl_tbl)]
-        i_to_skip = [i-1 for i in range(1, 4) if i != int(sngl_dbl_tbl)]
-    else:
-        i_to_keep = [int(i.strip(" ")) for i in sngl_dbl_tbl.split(",")]
-        i_to_skip = [i-1 for i in range(1, 4) if i not in i_to_keep]
-
-    file_name_ext = ""
-    for i in i_to_keep:
-        file_name_ext += f"_{file_name_descriptors[i]}"
-
     fig, ax = plt.subplots()
     for i, scores in enumerate([all_sngl, all_dbl, all_tbl]):
         if i in i_to_skip:
@@ -82,6 +55,81 @@ def plot_average_over_time(target):
     # want to plot average over time, each row has a date so need to 
     # separate rows into like-dates and calculate the 3 dart averages for each day
     
+    # get the 3 dart averages for each recorded session
+    avg_array, length_array, avg_of_3dartavg, std_of_3dartavg, min_avg = get_3dartavg_array(df)
+
+    # filter anomalies out of array
+    avg_array = filter_anomalous_3dartavgs(avg_array, length_array, avg_of_3dartavg, std_of_3dartavg)
+
+    fig, ax = plt.subplots()
+
+    # now calculate straight line which fits the remaining data
+    consecutive_nums = [i for i in range(len(avg_array))]
+    popt, pcov = curve_fit(lambda x, m, c: m*x + c, consecutive_nums, avg_array)
+    x_fit = np.linspace(consecutive_nums[0], consecutive_nums[-1], 1000)
+
+    # plot data and best fit line
+    ax.plot(avg_array, "kx")
+    ax.plot(x_fit, popt[0]*x_fit + popt[1], "b--", label=f"y = {popt[0]:.2f}x + {popt[1]:.2f}")
+
+    ax.legend()
+
+    # set limits based on previous minimum (before replacing anomalies with -1)
+    # but the current maximum, because some anomalies are very high and we want
+    # the maximum of the non anomalies
+    ax.set_ylim(min_avg - 5, max(avg_array) + 5)
+
+    ax.grid(linewidth="0.5", linestyle="--", zorder=1)
+    ax.set_title(f"3-dart average over time ({target.upper()} practice)")
+    ax.set_xlabel(f"Session number")
+    ax.set_ylabel(f"3-dart average")
+    print(np.sqrt(np.diag(pcov)))
+
+    plt.savefig(f"{os.path.dirname(os.path.realpath(__file__))}/plots/{target}/avg_over_time.png")
+
+# UTILITY FUNCTIONS
+def get_all_darts_from_df(df):
+    if dart == "all":
+        all_darts = [str(i) for i in list(df['Dart1']) + list(df['Dart2']) + list(df['Dart3'])]
+    elif "," not in dart:
+        all_darts = [str(i) for i in list(df[f'Dart{dart}'])]
+    else:
+        darts = [i.strip(" ") for i in dart.split(",")]
+        dart = f'{darts[0]}_and_{darts[1]}' # for file name
+        all_darts = [str(i) for i in list(df[f'Dart{darts[0]}']) + list(df[f'Dart{darts[1]}'])]
+
+    all_sngl = [i for i in all_darts if 'D' not in i and 'T' not in i]
+    all_dbl = [i.strip("D") for i in all_darts if 'D' in i]
+    all_tbl = [i.strip("T") for i in all_darts if 'T' in i]
+
+    return all_sngl, all_dbl, all_tbl
+
+def get_filename_ext(sngl_dbl_tbl):
+    file_name_descriptors = {
+        1: "sngl",
+        2: "dbl",
+        3: "tbl"
+    }
+    if sngl_dbl_tbl == "all":
+        # get all three darts
+        i_to_keep = [1, 2, 3]
+        i_to_skip = []
+    elif "," not in sngl_dbl_tbl:
+        # only single dart plot because no commas in string
+        i_to_keep = [int(sngl_dbl_tbl)]
+        i_to_skip = [i-1 for i in range(1, 4) if i != int(sngl_dbl_tbl)]
+    else:
+        # commas in string, so at least two darts
+        i_to_keep = [int(i.strip(" ")) for i in sngl_dbl_tbl.split(",")]
+        i_to_skip = [i-1 for i in range(1, 4) if i not in i_to_keep]
+
+    file_name_ext = ""
+    for i in i_to_keep:
+        file_name_ext += f"_{file_name_descriptors[i]}"
+    
+    return file_name_ext, i_to_skip
+
+def get_3dartavg_array(df):
     df_full_length = len(df)
     first_date = df.iloc[1][0]
 
@@ -118,6 +166,9 @@ def plot_average_over_time(target):
     std_of_3dartavg = np.std(avg_array)
     min_avg = min(avg_array)
 
+    return avg_array, length_array, avg_of_3dartavg, std_of_3dartavg, min_avg
+
+def filter_anomalous_3dartavgs(avg_array, length_array, avg_of_3dartavg, std_of_3dartavg):
     for i, val in enumerate(avg_array):
         # check if value is more than 3 std devs away from mean
         if abs(val - avg_of_3dartavg) >= 3 * std_of_3dartavg:
@@ -128,30 +179,8 @@ def plot_average_over_time(target):
         if length_array[i] < 10:
             avg_array[i] = -1
 
-    fig, ax = plt.subplots()
-    ax.plot(avg_array, "kx")
-
-    # now calculate and plot straight line which fits the remaining data
-    avgs_remove_min1 = [i for i in avg_array if i != -1]
-    consecutive_nums = [i for i in range(len(avg_array)) if avg_array[i] != -1]
-    popt, pcov = curve_fit(lambda x, m, c: m*x + c, consecutive_nums, avgs_remove_min1)
-    x_fit = np.linspace(consecutive_nums[0], consecutive_nums[-1], 1000)
-    ax.plot(x_fit, popt[0]*x_fit + popt[1], "b--", label=f"y = {popt[0]:.2f}x + {popt[1]:.2f}")
-
-    ax.legend()
-
-    # set limits based on previous minimum (before replacing anomalies with -1)
-    # but the current maximum, because some anomalies are very high and we want
-    # the maximum of the non anomalies
-    ax.set_ylim(min_avg - 5, max(avg_array) + 5)
-
-    ax.grid(linewidth="0.5", linestyle="--", zorder=1)
-    ax.set_title(f"3-dart average over time ({target.upper()} practice)")
-    ax.set_xlabel(f"Days since {first_date}")
-    ax.set_ylabel(f"3-dart average")
-    print( np.sqrt(np.diag(pcov)))
-
-    plt.savefig(f"{os.path.dirname(os.path.realpath(__file__))}/plots/{target}/avg_over_time.png")
+    # remove -1 data points
+    return [i for i in avg_array if i != -1]
 
 t20_linearised_score = ['0', '3', '19', '7', '16', '8', '11', '14', '9', '12', '5', '20', '1', '18', '4', '13', '6', '10', '15', '2', '17', '25', '50']
 t19_linearised_score = ['0', '1', '20', '5', '12', '9', '14', '11', '8', '16', '7', '19', '3', '17', '2', '15', '10', '6', '13', '4', '18', '25', '50']
