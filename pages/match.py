@@ -303,7 +303,7 @@ def numpad_subtract_score(n, p1_name_class, p1_score, p2_score, numpad_score):
         new_p1_score = p1_score
         new_p2_score = calc_remaining_score_numpad(int(p2_score), int(numpad_score))
 
-    return nop, nop, nop, nop, "_____", new_p1_score, new_p2_score, nop, {'display': 'none'}, {'display': 'none'}, {}
+    return nop, nop, nop, nop, new_p1_score, new_p2_score, nop, "_____", nop, {'display': 'none'}, {}
 
 @callback(
     Output("numpad_score", "children", allow_duplicate=True),
