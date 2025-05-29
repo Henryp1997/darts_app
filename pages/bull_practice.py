@@ -2,10 +2,11 @@ import dash
 from dash import html, callback
 from dash import no_update as nop
 from dash.dependencies import Output, Input, State
-import math
-import os
 import pandas as pd
-from utils import *
+
+# App specific imports
+import utils
+from consts import DATA_PATH, ARROW_LEFT, TICK
 
 dash.register_page(__name__)
 
@@ -91,8 +92,8 @@ def layout():
                     ]),
                     html.Div(style={"height": "1rem"}),
                     html.Div([
-                        html.Button("⬅", id="btn_backspace_bp", className="backspace_button"),
-                        html.Button("\u2714", id="btn_confirm_bp", disabled=True, className="green_button")
+                        html.Button(ARROW_LEFT, id="btn_backspace_bp", className="backspace_button"),
+                        html.Button(TICK, id="btn_confirm_bp", disabled=True, className="green_button")
                     ])
                 ])
             ]),
@@ -112,7 +113,7 @@ def init_bull_file(n):
     trigger = dash.callback_context.triggered[0]['prop_id']
     if trigger == ".":
         try:
-            df = pd.read_csv(f"{data_path}/bull_practice.csv")
+            df = pd.read_csv(f"{DATA_PATH}/bull_practice.csv")
             n_visits = len(df)
             n_thrown = n_visits * 3
             all_darts = list(df['Dart1']) + list(df['Dart2']) + list(df['Dart3'])
@@ -126,7 +127,7 @@ def init_bull_file(n):
             return f"{n_bull} / {n_thrown} ({perc_bull}%)", f"{n_25} / {n_thrown} ({perc_25}%)", "0 / 0 (0%)", "0 / 0 (0%)", str(n_visits)
         except FileNotFoundError:
             # init file if not found
-            with open(f"{data_path}/bull_practice.csv", "w") as f:
+            with open(f"{DATA_PATH}/bull_practice.csv", "w") as f:
                 f.write("Timestamp,Dart1,Dart2,Dart3")
             f.close()
             return "_____", "_____", "_____", "_____", "0"    
@@ -203,7 +204,7 @@ def enable_confirm_btn(dart_3, dart_1, dart_2):
     prevent_initial_call=True
 )
 def record_all_3_darts(n_confirm, d1, d2, d3):
-    write_darts_to_file(d1, d2, d3, "bull")
+    utils.write_darts_to_file(d1, d2, d3, "bull")
     return "_____", "_____", "_____"
 
 @callback(

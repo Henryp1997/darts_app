@@ -2,11 +2,10 @@ import dash
 from dash import html, callback
 from dash import no_update as nop
 from dash.dependencies import Output, Input, State
-import math
-import os
-import pandas as pd
-import dash_bootstrap_components as dbc
-from utils import *
+
+# App specific imports
+import utils
+from consts import ARROW_LEFT, TICK
 
 dash.register_page(__name__)
 
@@ -36,7 +35,7 @@ def layout(start=None):
                     html.Div(style={"height": "1rem"}),
                     html.Div([
                         html.Div("Player 1 starts", id="init_choice_text", style={"display": "inline-block", "margin-right": "5%"}),
-                        html.Button("\u2714", id="btn_confirm_init"),
+                        html.Button(TICK, id="btn_confirm_init"),
                     ], style={"text-align": "center"}),
                     html.Div(style={"height": "1rem"}),
                 ], style={"color": "white", "border": "2px solid white"}),
@@ -106,8 +105,8 @@ def layout(start=None):
                                 html.Div([
                                     html.Div(".", className="numpad_button_spacer"),
                                     html.Button("0", id=f"btn_0_numpad", className="numpad_button"),
-                                    html.Button("⬅", id="btn_backspace_numpad", className="backspace_button", style={"width": "25%"}),
-                                    html.Button("\u2714", id="btn_confirm_numpad", disabled=True, className="green_button", style={"width": "25%"})
+                                    html.Button(ARROW_LEFT, id="btn_backspace_numpad", className="backspace_button", style={"width": "25%"}),
+                                    html.Button(TICK, id="btn_confirm_numpad", disabled=True, className="green_button", style={"width": "25%"})
                                 ]),
                             ], id="numpad_background", className="numpad_background"),
                         ], id="numpad_display"),
@@ -285,25 +284,25 @@ def record_score(*args):
 def numpad_subtract_score(n, p1_name_class, p1_score, p2_score, numpad_score):
     numpad_score = int(numpad_score)
     if p1_name_class == "white_text_inline":
-        if verify_checkout_numpad(int(numpad_score), int(p1_score)):
-            return *((nop,)*8), {}, {'display': 'none'}, {'display': 'none'}
+        if utils.verify_checkout_numpad(int(numpad_score), int(p1_score)):
+            return *((nop,)*8), {}, {"display": "none"}, {"display": "none"}
         
         if int(numpad_score) > 180:
-            return *((nop,)*7), "_____", {'display': 'none'}, {}, {'display': 'none'}
+            return *((nop,)*7), "_____", {"display": "none"}, {}, {"display": "none"}
 
-        new_p1_score = calc_remaining_score_numpad(int(p1_score), int(numpad_score))
+        new_p1_score = utils.calc_remaining_score_numpad(int(p1_score), int(numpad_score))
         new_p2_score = p2_score
     else:
-        if verify_checkout_numpad(int(numpad_score), int(p2_score)):
-            return *((nop,)*8), {}, {'display': 'none'}, {'display': 'none'}
+        if utils.verify_checkout_numpad(int(numpad_score), int(p2_score)):
+            return *((nop,)*8), {}, {"display": "none"}, {"display": "none"}
         
         if int(numpad_score) > 180:
-            return *((nop,)*7), "_____", {'display': 'none'}, {}, {'display': 'none'}
+            return *((nop,)*7), "_____", {"display": "none"}, {}, {"display": "none"}
         
         new_p1_score = p1_score
-        new_p2_score = calc_remaining_score_numpad(int(p2_score), int(numpad_score))
+        new_p2_score = utils.calc_remaining_score_numpad(int(p2_score), int(numpad_score))
 
-    return nop, nop, nop, nop, new_p1_score, new_p2_score, nop, "_____", nop, {'display': 'none'}, {}
+    return nop, nop, nop, nop, new_p1_score, new_p2_score, nop, "_____", nop, {"display": "none"}, {}
 
 @callback(
     Output("numpad_score", "children", allow_duplicate=True),
@@ -328,10 +327,10 @@ def open_double_check_div(n_NO, n_YES, player_started, start_score):
 
     # check if player 1 did finish on a double by asking the user
     if 'NO' in trigger:
-        return "_____", nop, nop, nop, {'display': 'none'}, {}
+        return "_____", nop, nop, nop, {"display": "none"}, {}
     
     # YES was pressed
-    return "_____", start_score, start_score, next_to_start, {'display': 'none'}, {}
+    return "_____", start_score, start_score, next_to_start, {"display": "none"}, {}
 
 @callback(
     Output("score_too_high_div", "style", allow_duplicate=True),
@@ -340,4 +339,4 @@ def open_double_check_div(n_NO, n_YES, player_started, start_score):
     prevent_initial_call=True
 )
 def open_double_check_div(n_OK):   
-    return {'display': 'none'}, {}
+    return {"display": "none"}, {}

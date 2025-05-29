@@ -95,3 +95,12 @@ button:active {
     color: white;
     display: inline-block
 }
+
+.grey_window {
+    font-size: 2rem;
+    color: white;
+    border: 2px solid #888888;
+    border-radius: 1rem;
+    background-color: #444444;
+    text-align: center
+}

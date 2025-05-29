@@ -2,10 +2,11 @@ import dash
 from dash import html, callback
 from dash import no_update as nop
 from dash.dependencies import Output, Input, State
-import math
-import os
 import pandas as pd
-from utils import *
+
+# App imports
+import utils
+from consts import DATA_PATH, ARROW_LEFT, TICK
 
 dash.register_page(__name__)
 
@@ -87,8 +88,8 @@ def layout(target=None):
                         html.Div([
                             html.Button("Double", id="btn_double", className="green_button", style={"width": "7.05rem"}),
                             html.Button("Treble", id="btn_treble", className="green_button", style={"width": "7.05rem"}),
-                            html.Button("⬅", id="btn_backspace", className="backspace_button"),
-                            html.Button("\u2714", id="btn_confirm", disabled=True, className="green_button")
+                            html.Button(ARROW_LEFT, id="btn_backspace", className="backspace_button"),
+                            html.Button(TICK, id="btn_confirm", disabled=True, className="green_button")
                         ]),
                     ])
                 ]),
@@ -107,7 +108,7 @@ def layout(target=None):
                             html.Div(style={"height": "0.5rem"}),
                         ])
                     ],
-                    style={"width": "90%", "font-size": "2rem", "color": "white", "border": "2px solid #888888", "border-radius": "1rem", "background-color": "#444444", "text-align": "center"}
+                    className="grey_window", style={"width": "90%"}
                 )
             ], id="del_last_score_window", style={"display": "none"})
         ])
@@ -126,11 +127,11 @@ def init_avg_file(n, title):
     trigger = dash.callback_context.triggered[0]['prop_id']
     if trigger == ".":
         try:
-            df = pd.read_csv(f"{data_path}/{target}_practice.csv")
-            return initialise_3_dart_avg(df)
+            df = pd.read_csv(f"{DATA_PATH}/{target}_practice.csv")
+            return utils.initialise_3_dart_avg(df)
         except FileNotFoundError:
             # init file if not found
-            create_3_dart_avg_file(data_path, target)
+            utils.create_3_dart_avg_file(DATA_PATH, target)
             return "_____"        
     return nop
 
@@ -146,7 +147,7 @@ def double_treble_text(btn_1_text, n_double, n_treble, *btns):
     trigger = dash.callback_context.triggered[0]['prop_id']
     
     if "double" in trigger or "treble" in trigger:
-        return convert_all_btns_to_dbl_tbl(btn_1_text, d_or_t=trigger.split("btn_")[1].strip(".n_clicks")[0].upper())
+        return utils.convert_all_btns_to_dbl_tbl(btn_1_text, d_or_t=trigger.split("btn_")[1].strip(".n_clicks")[0].upper())
       
     # below code executed if one of the number buttons triggered this callback
     # just returns the button texts to non double or treble after each input
@@ -174,7 +175,7 @@ def record_thrown_dart(*args):
     btn_names = args[23:-3]
     
     value = trigger.split("btn_")[1].split(".n_clicks")[0]
-    return record_dart_in_correct_place(value, btn_names, d1, d2)
+    return utils.record_dart_in_correct_place(value, btn_names, d1, d2)
 
 @callback(
     Output("dart_1", "children", allow_duplicate=True),
@@ -190,8 +191,8 @@ def record_thrown_dart(*args):
     prevent_initial_call=True
 )
 def record_all_3_darts(n_confirm, d1, d2, d3, running_total, title):
-    total = calculate_total(d1, d2, d3)
-    write_darts_to_file(d1, d2, d3, titles_rev[title])
+    total = utils.calculate_total(d1, d2, d3)
+    utils.write_darts_to_file(d1, d2, d3, titles_rev[title])
     return "_____", "_____", "_____", str(int(running_total) + total)
 
 @callback(
@@ -244,11 +245,11 @@ def record_3_dart_avg(running_total, recalc_avgs, alltime_total, n_visits_curren
         just_deleted = True
 
     # calculate current session average
-    new_curr_avg = calc_session_3_dart_avg(n_visits_current, running_total, just_deleted)
+    new_curr_avg = utils.calc_session_3_dart_avg(n_visits_current, running_total, just_deleted)
     new_curr_avg = float("%.2f" % new_curr_avg)
 
     # calculate all time average
-    new_alltime_avg = calc_alltime_3_dart_avg(n_visits_current, n_visits_all, running_total, alltime_total, just_deleted)
+    new_alltime_avg = utils.calc_alltime_3_dart_avg(n_visits_current, n_visits_all, running_total, alltime_total, just_deleted)
     new_alltime_avg = float("%.2f" % new_alltime_avg)
     
     return new_alltime_avg, new_curr_avg, n_visits_return, "no"
@@ -274,12 +275,12 @@ def record_3_dart_avg(running_total, recalc_avgs, alltime_total, n_visits_curren
     prevent_initial_call=True
 )
 def open_delete_score_window(n1, n2, n3, n_visits, n_visits_all, running_total, alltime_total, title):
-    trigger = dash.callback_context.triggered[0]['prop_id']
-    if 'NO' in trigger:
+    trigger = dash.callback_context.triggered[0]["prop_id"]
+    if "NO" in trigger:
         return {"display": "none"}, {}, nop, nop, nop, nop, "no"
     
-    if 'YES' in trigger:
-        last_score = int(delete_last_entry_in_file(target=titles_rev[title]))
+    if "YES" in trigger:
+        last_score = int(utils.delete_last_entry_in_file(target=titles_rev[title]))
         if int(n_visits) == 0:
             n_visits_all = str(int(n_visits_all) - 1)
             alltime_total = str(int(alltime_total) - last_score)
