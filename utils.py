@@ -51,19 +51,6 @@ def update_3_dart_avg_file(n_visits, avg, target):
         f.write(f"number of visits = {n_visits}\n3 dart average = {avg}")
 
 
-def record_dart_in_correct_place(value, btn_names, d1, d2):
-    if value in ['miss', 'bull', '25']:
-        val_dict = {"miss": "0", "bull": "Bull", "25": "25"}
-        value = val_dict[value]
-    else:
-        value = btn_names[int(value) - 1]
-    if d1 == "_____":
-        return value, nop, nop
-    if d2 == "_____":
-        return nop, value, nop
-    return nop, nop, value
-
-
 def convert_score(value):
     if 'D' in value:
         return int(value.split("D")[1]) * 2
@@ -146,3 +133,22 @@ def verify_checkout_numpad(score_thrown, score_remaining):
 
 def calc_remaining_score_numpad(score, score_thrown):
     return str(score - score_thrown) if score_thrown < score - 1 else str(score)
+
+
+def clear_last_dart(d1, d2, d3):
+    """ Delete the most recent dart score input """
+    darts = [d1, d2, d3]
+    for i in reversed(range(3)):
+        if darts[i] != "_____":
+            darts[i] = "_____"
+            break
+    return tuple(darts)
+
+
+def record_dart_in_correct_place(d1, d2, d3, value):
+    """ Show either _____ or the thrown dart value """
+    darts = [d1, d2, d3]
+    for i in range(3):
+        if darts[i] == "_____":
+            return tuple(str(value) if j == i else nop for j in range(3))
+    return nop, nop, nop

@@ -16,7 +16,8 @@ from consts import(
     BULL_CURRENT_STR,
     BULL_ALLTIME_STR,
     BULL25_CURRENT_STR,
-    BULL25_ALLTIME_STR
+    BULL25_ALLTIME_STR,
+    ID_VALUE_MAP
 )
 
 dash.register_page(__name__)
@@ -43,8 +44,8 @@ def layout():
                     ])
                     for text, mr, id in zip(
                         (BULL_CURRENT_STR, BULL_ALLTIME_STR, BULL25_CURRENT_STR, BULL25_ALLTIME_STR),
-                        ("6.5vw", "21vw", "9.5vw", "24vw"),
-                        ("bull_hits_current", "25_hits_current", "bull_hits_all", "25_hits_all")
+                        ("6.5vw", "20.9vw", "9.5vw", "24vw"),
+                        ("bull_hits_current", "bull_hits_all", "25_hits_current", "25_hits_all")
                     )
                 ]
             ),
@@ -110,6 +111,7 @@ def init_bull_file(n):
             return "_____", "_____", "_____", "_____", "0"    
     return nop
 
+
 @callback(
     Output("dart_1_bp", "children"),
     Output("dart_2_bp", "children"),
@@ -125,23 +127,12 @@ def init_bull_file(n):
     prevent_initial_call=True
 )
 def record_thrown_dart(n_25, n_bp, n_miss, n_outer, n_inner, d1, d2, d3):
-    if d3 != "_____":
-        return nop, nop, nop
     trigger = dash.callback_context.triggered[0]['prop_id']
-    
-    if "outer" in trigger:
-        value = "Miss (OW)"
-    elif "inner" in trigger:
-        value = "25 (IW)"
-    else:
-        value = trigger.split("btn_")[1].split(".n_clicks")[0].split("_bp")[0]
-        value = value[0].upper() + value[1:]
-    
-    if d1 == "_____":
-        return str(value), nop, nop
-    if d2 == "_____":
-        return nop, str(value), nop
-    return nop, nop, str(value)
+    id = trigger.split(".n_clicks")[0]
+    value = ID_VALUE_MAP[id]
+
+    return utils.record_dart_in_correct_place(d1, d2, d3, value)
+
 
 @callback(
     Output("dart_1_bp", "children", allow_duplicate=True),
@@ -154,11 +145,8 @@ def record_thrown_dart(n_25, n_bp, n_miss, n_outer, n_inner, d1, d2, d3):
     prevent_initial_call=True
 )
 def delete_dart_input(n_backspace, d1, d2, d3):
-    if d3 != "_____":
-        return nop, nop, "_____"
-    if d2 != "_____":
-        return nop, "_____", "_____"
-    return "_____", "_____", "_____"
+    return utils.clear_last_dart(d1, d2, d3)
+
 
 @callback(
     Output("btn_confirm_bp", "disabled"),
@@ -169,6 +157,7 @@ def delete_dart_input(n_backspace, d1, d2, d3):
 )
 def enable_confirm_btn(dart_3, dart_1, dart_2):
     return dart_3 == "_____"
+
 
 @callback(
     Output("dart_1_bp", "children", allow_duplicate=True),
@@ -181,8 +170,9 @@ def enable_confirm_btn(dart_3, dart_1, dart_2):
     prevent_initial_call=True
 )
 def record_all_3_darts(n_confirm, d1, d2, d3):
-    utils.write_darts_to_file(d1, d2, d3, "bull")
+    utils.write_darts_to_file(d1, d2, d3, target="bull")
     return "_____", "_____", "_____"
+
 
 @callback(
     Output("n_visits_bp", "children"),
@@ -203,8 +193,6 @@ def record_all_3_darts(n_confirm, d1, d2, d3):
     prevent_initial_call = True
 )
 def update_currents(n, n_visits_now, n_visits_all, bull_hits_now, hits_25_now, bull_hits_all, hits_25_all, d1, d2, d3):
-    trigger = dash.callback_context.triggered[0]['prop_id']
-
     n_bull_in_visit = [d1, d2, d3].count("Bull")
     n_25_in_visit = [d1, d2, d3].count("25") + [d1, d2, d3].count("25 (IW)")
 
@@ -232,5 +220,3 @@ def update_currents(n, n_visits_now, n_visits_all, bull_hits_now, hits_25_now, b
     hits_25_output_all = f"{total_25s_all} / {n_throws_all} ({perc_25_all}%)"
 
     return str(int(n_visits_now) + 1), bull_hits_output_now, hits_25_output_now, bull_hits_output_all, hits_25_output_all
-
-    

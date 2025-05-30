@@ -8,7 +8,7 @@ import pandas as pd
 import utils
 import common_elems as elems
 from common_elems import v_spacer
-from consts import DATA_PATH, ARROW_LEFT, TICK, HIDE
+from consts import DATA_PATH, ARROW_LEFT, TICK, HIDE, ID_VALUE_MAP
 
 dash.register_page(__name__)
 
@@ -117,7 +117,7 @@ def layout(target=None):
     State("title", "children")
 )
 def init_avg_file(n, title):
-    # use title as an input but only trigger this callback once - on page load
+    # Use title as an input but only trigger this callback once - on page load
     target = titles_rev[title]
     trigger = dash.callback_context.triggered[0]['prop_id']
     if trigger == ".":
@@ -125,10 +125,11 @@ def init_avg_file(n, title):
             df = pd.read_csv(f"{DATA_PATH}/{target}_practice.csv")
             return utils.initialise_3_dart_avg(df)
         except FileNotFoundError:
-            # init file if not found
+            # Init file if not found
             utils.create_3_dart_avg_file(DATA_PATH, target)
             return "_____"        
     return nop
+
 
 @callback(
     *[Output(f"btn_{i}", "children") for i in range(1, 21)],
@@ -142,21 +143,26 @@ def double_treble_text(btn_1_text, n_double, n_treble, *btns):
     trigger = dash.callback_context.triggered[0]['prop_id']
     
     if "double" in trigger or "treble" in trigger:
-        return utils.convert_all_btns_to_dbl_tbl(btn_1_text, d_or_t=trigger.split("btn_")[1].strip(".n_clicks")[0].upper())
+        return utils.convert_all_btns_to_dbl_tbl(
+            btn_1_text, 
+            d_or_t="D" if "double" in trigger else "T"
+        )
       
-    # below code executed if one of the number buttons triggered this callback
-    # just returns the button texts to non double or treble after each input
+    # Below code executed if one of the number buttons triggered this callback
+    # This just returns the button texts to non double or treble
     return [f"{i}" for i in range(1, 21)]
+
 
 @callback(
     Output("dart_1", "children"),
     Output("dart_2", "children"),
     Output("dart_3", "children"),
+
     *[Input(f"btn_{i}", "n_clicks") for i in range(1, 21)],
     Input("btn_25", "n_clicks"),
     Input("btn_bull", "n_clicks"),
     Input("btn_miss", "n_clicks"),
-    *[State(f"btn_{i}", "children") for i in range(1, 21)],
+
     State("dart_1", "children"),
     State("dart_2", "children"),
     State("dart_3", "children"),
@@ -164,13 +170,12 @@ def double_treble_text(btn_1_text, n_double, n_treble, *btns):
 )
 def record_thrown_dart(*args):
     d1, d2, d3 = args[-3:]
-    if d3 != "_____":
-        return nop, nop, nop
     trigger = dash.callback_context.triggered[0]['prop_id']
-    btn_names = args[23:-3]
+    id = trigger.split(".n_clicks")[0]
     
-    value = trigger.split("btn_")[1].split(".n_clicks")[0]
-    return utils.record_dart_in_correct_place(value, btn_names, d1, d2)
+    value = ID_VALUE_MAP[id]
+    return utils.record_dart_in_correct_place(d1, d2, d3, value)
+
 
 @callback(
     Output("dart_1", "children", allow_duplicate=True),
@@ -185,10 +190,11 @@ def record_thrown_dart(*args):
     State("title", "children"),
     prevent_initial_call=True
 )
-def record_all_3_darts(n_confirm, d1, d2, d3, running_total, title):
+def record_all_3_darts(_, d1, d2, d3, running_total, title):
     total = utils.calculate_total(d1, d2, d3)
-    utils.write_darts_to_file(d1, d2, d3, titles_rev[title])
+    utils.write_darts_to_file(d1, d2, d3, target=titles_rev[title])
     return "_____", "_____", "_____", str(int(running_total) + total)
+
 
 @callback(
     Output("dart_1", "children", allow_duplicate=True),
@@ -201,22 +207,18 @@ def record_all_3_darts(n_confirm, d1, d2, d3, running_total, title):
     prevent_initial_call=True
 )
 def delete_dart_input(n_backspace, d1, d2, d3):
-    if d3 != "_____":
-        return nop, nop, "_____"
-    if d2 != "_____":
-        return nop, "_____", "_____"
-    return "_____", "_____", "_____"
+    return utils.clear_last_dart(d1, d2, d3)
+
 
 @callback(
     Output("btn_confirm", "disabled"),
     Input("dart_3", "children"),
-    State("dart_1", "children"),
-    State("dart_2", "children"),
     prevent_initial_call=True
 )
-def enable_confirm_btn(dart_3, dart_1, dart_2):
+def enable_confirm_btn(dart_3):
     return dart_3 == "_____"
     
+
 @callback(
     Output("3_dart_avg", "children", allow_duplicate=True),
     Output("3_dart_avg_current", "children", allow_duplicate=True),
@@ -232,22 +234,22 @@ def enable_confirm_btn(dart_3, dart_1, dart_2):
     prevent_initial_call=True
 )
 def record_3_dart_avg(running_total, recalc_avgs, alltime_total, n_visits_current, n_visits_all):
-    trigger = dash.callback_context.triggered[0]['prop_id']
     n_visits_return = str(int(n_visits_current) + 1)
     just_deleted = False
     if recalc_avgs == "yes":
         n_visits_return = nop
         just_deleted = True
 
-    # calculate current session average
+    # Calculate current session average
     new_curr_avg = utils.calc_session_3_dart_avg(n_visits_current, running_total, just_deleted)
-    new_curr_avg = float("%.2f" % new_curr_avg)
+    new_curr_avg = f"{new_curr_avg:.2f}"
 
-    # calculate all time average
+    # Calculate all time average
     new_alltime_avg = utils.calc_alltime_3_dart_avg(n_visits_current, n_visits_all, running_total, alltime_total, just_deleted)
-    new_alltime_avg = float("%.2f" % new_alltime_avg)
+    new_alltime_avg = f"{new_alltime_avg:.2f}"
     
     return new_alltime_avg, new_curr_avg, n_visits_return, "no"
+
 
 @callback(
     Output("del_last_score_window", "style"),
@@ -272,7 +274,7 @@ def record_3_dart_avg(running_total, recalc_avgs, alltime_total, n_visits_curren
 def open_delete_score_window(n1, n2, n3, n_visits, n_visits_all, running_total, alltime_total, title):
     trigger = dash.callback_context.triggered[0]["prop_id"]
     if "NO" in trigger:
-        return HIDE, {}, nop, nop, nop, nop, "no"
+        return HIDE, {}, *((nop,)*4), "no"
     
     if "YES" in trigger:
         last_score = int(utils.delete_last_entry_in_file(target=titles_rev[title]))
@@ -285,4 +287,4 @@ def open_delete_score_window(n1, n2, n3, n_visits, n_visits_all, running_total, 
         running_total = str(int(running_total) - last_score)
         return HIDE, {}, nop, nop, n_visits, running_total, "yes"
 
-    return {"display": "flex", "justify-content": "center"}, HIDE, nop, nop, nop, nop, "no"
+    return {"display": "flex", "justify-content": "center"}, HIDE, *((nop,)*4), "no"
