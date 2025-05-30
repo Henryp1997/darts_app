@@ -6,7 +6,9 @@ import pandas as pd
 
 # App imports
 import utils
-from consts import DATA_PATH, ARROW_LEFT, TICK
+import common_elems as elems
+from common_elems import v_spacer
+from consts import DATA_PATH, ARROW_LEFT, TICK, HIDE
 
 dash.register_page(__name__)
 
@@ -24,93 +26,86 @@ def layout(target=None):
     if target not in ("t20", "t19"):
         return html.Div("404", style={"color": "white", "font-size": "2rem"})
     return html.Div([
-            html.Div(f"{titles[target]}", id="title", style={"color": "white", "font-size": "2rem", "border-bottom": "1px solid #fff"}),
-            html.Div("0", id="n_visits", style={"display": "none"}),
-            html.Div("0", id="running_total", style={"display": "none"}),
-            html.Div("0", id="n_visits_alltime", style={"display": "none"}),
-            html.Div("0", id="all_time_total", style={"display": "none"}),
-            html.Div(id="recalculate_avgs", style={"display": "none"}),
-            html.Div(style={"height": "1rem"}),
+            html.Div(f"{titles[target]}", id="title", className="page_title_div"),
+            html.Div("0", id="n_visits", style=HIDE),
+            html.Div("0", id="running_total", style=HIDE),
+            html.Div("0", id="n_visits_alltime", style=HIDE),
+            html.Div("0", id="all_time_total", style=HIDE),
+            html.Div(id="recalculate_avgs", style=HIDE),
+            v_spacer("2vh"),
             
-            # main game window
+            # Main game window
             html.Div([
+                elems.get_darts_hit_bar(page="practice"),
+                v_spacer("1vh"),
                 html.Div([
-                    html.Div(style={"height": "0.5rem"}),
-                    html.Div(".", className="black_text_inline_spacer", style={"width": "2%"}),
-                    html.Div("Darts:", className="white_text_inline"),
-                    html.Div(".", className="black_text_inline_spacer", style={"width": "7.5%"}),
-                    html.Div("_____", id="dart_1", className="white_text_inline"),
-                    html.Div(".", className="black_text_inline_spacer", style={"width": "7.5%"}),
-                    html.Div("_____", id="dart_2", className="white_text_inline"),
-                    html.Div(".", className="black_text_inline_spacer", style={"width": "7.5%"}),
-                    html.Div("_____", id="dart_3", className="white_text_inline"),
-                    html.Div(style={"height": "0.5rem"}),
-                ], style={"border": "2px solid #fff"}),
-                html.Div(style={"height": "0.5rem"}),
-                html.Div([
-                    html.Div(style={"height": "0.5rem"}),
-                    html.Div(".", className="black_text_inline_spacer", style={"width": "2%"}),
-                    html.Div("3-dart average (current session):", className="white_text_inline"),
-                    html.Div(".", className="black_text_inline_spacer", style={"width": "7.5%"}),
+                    v_spacer("1vh"),
+                    elems.padded_text_white("3-dart average (current session):", margin_right="7vw"),
                     html.Div("_____", id="3_dart_avg_current", className="white_text_inline"),
-                    html.Div(style={"height": "0.5rem"}),
+                    v_spacer("1vh"),
                 ], style={"border": "2px solid #fff"}),
-                html.Div(style={"height": "0.5rem"}),
+                v_spacer("1vh"),
                 html.Div([
-                    html.Div(style={"height": "0.5rem"}),
-                    html.Div(".", className="black_text_inline_spacer", style={"width": "2%"}),
-                    html.Div("3-dart average (all time):", className="white_text_inline"),
-                    html.Div(".", className="black_text_inline_spacer", style={"width": "22.5%"}),
+                    v_spacer("1vh"),
+                    elems.padded_text_white("3-dart average (all time):", margin_right="21.3vw"),
                     html.Div("_____", id="3_dart_avg", className="white_text_inline"),
-                    html.Div(style={"height": "0.5rem"}),
+                    v_spacer("1vh"),
                 ], style={"border": "2px solid #fff"}),
-                html.Div(style={"height": "0.5rem"}),
+                v_spacer("1vh"),
+
+                # All buttons
                 html.Div([
                     html.Div([
                         html.Div([
                             *[html.Button(f"{i}", id=f"btn_{i}") for i in range(1, 6)]
-                        ]),
+                        ], className="btn_container"),
+                        v_spacer("0.75vh"),
                         html.Div([
                             *[html.Button(f"{i}", id=f"btn_{i}") for i in range(6, 11)]
-                        ]),
+                        ], className="btn_container"),
+                        v_spacer("0.75vh"),
                         html.Div([
                             *[html.Button(f"{i}", id=f"btn_{i}") for i in range(11, 16)]
-                        ]),
+                        ], className="btn_container"),
+                        v_spacer("0.75vh"),
                         html.Div([
-                            *[html.Button(f"{i}", id=f"btn_{i}") for i in range(16, 21)]                        
-                        ]),
+                            *[html.Button(f"{i}", id=f"btn_{i}") for i in range(16, 21)]                   
+                        ], className="btn_container"),
+                        v_spacer("0.75vh"),
                         html.Div([
                             html.Button("25", id="btn_25"),
                             html.Button("Bull", id="btn_bull"),
                             html.Button("Miss", id="btn_miss"),
                             html.Button("Delete last score", id="btn_del_last", className="del_last_score_btn")
-                        ]),
+                        ], className="btn_container"),
+                        v_spacer("0.75vh"),
                         html.Div([
-                            html.Button("Double", id="btn_double", className="green_button", style={"width": "7.05rem"}),
-                            html.Button("Treble", id="btn_treble", className="green_button", style={"width": "7.05rem"}),
+                            html.Button("Double", id="btn_double", className="green_button", style={"width": "27vw"}),
+                            html.Button("Treble", id="btn_treble", className="green_button", style={"width": "27vw"}),
                             html.Button(ARROW_LEFT, id="btn_backspace", className="backspace_button"),
                             html.Button(TICK, id="btn_confirm", disabled=True, className="green_button")
-                        ]),
+                        ], className="btn_container"),
                     ])
                 ]),
 
             ], id="main_game_window"),
 
             # delete last score window
-            html.Div(style={"height": "6rem"}),
+            html.Div(style={"height": "6vh"}),
             html.Div([
                 html.Div([
-                    html.Div(style={"height": "1rem"}),
+                    v_spacer("2vh"),
                     html.Div("Delete last score saved in the database?"),
+                    v_spacer("2vh"),
                     html.Div([
-                            html.Button("NO", id="btn_del_last_NO", className="backspace_button", style={"width": "30%"}),
-                            html.Button("YES", id="btn_del_last_YES", className="green_button", style={"width": "30%"}),
-                            html.Div(style={"height": "0.5rem"}),
-                        ])
+                            html.Button("NO", id="btn_del_last_NO", className="backspace_button", style={"width": "30vw"}),
+                            html.Button("YES", id="btn_del_last_YES", className="green_button", style={"width": "30vw"}),
+                        ], className="btn_container centered"),
+                    v_spacer("2vh"),
                     ],
-                    className="grey_window", style={"width": "90%"}
+                    className="grey_window", style={"width": "80vw"}
                 )
-            ], id="del_last_score_window", style={"display": "none"})
+            ], id="del_last_score_window", style=HIDE)
         ])
 
 ### CALLBACKS
@@ -277,17 +272,17 @@ def record_3_dart_avg(running_total, recalc_avgs, alltime_total, n_visits_curren
 def open_delete_score_window(n1, n2, n3, n_visits, n_visits_all, running_total, alltime_total, title):
     trigger = dash.callback_context.triggered[0]["prop_id"]
     if "NO" in trigger:
-        return {"display": "none"}, {}, nop, nop, nop, nop, "no"
+        return HIDE, {}, nop, nop, nop, nop, "no"
     
     if "YES" in trigger:
         last_score = int(utils.delete_last_entry_in_file(target=titles_rev[title]))
         if int(n_visits) == 0:
             n_visits_all = str(int(n_visits_all) - 1)
             alltime_total = str(int(alltime_total) - last_score)
-            return {"display": "none"}, {}, n_visits_all, alltime_total, "0", "0", "yes"
+            return HIDE, {}, n_visits_all, alltime_total, "0", "0", "yes"
 
         n_visits = str(int(n_visits) - 1)
         running_total = str(int(running_total) - last_score)
-        return {"display": "none"}, {}, nop, nop, n_visits, running_total, "yes"
+        return HIDE, {}, nop, nop, n_visits, running_total, "yes"
 
-    return {"margin-left": "2.5rem"}, {"display": "none"}, nop, nop, nop, nop, "no"
+    return {"display": "flex", "justify-content": "center"}, HIDE, nop, nop, nop, nop, "no"

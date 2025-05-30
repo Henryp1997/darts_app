@@ -1,0 +1,87 @@
+:root {
+    --btn-border-size: 0.3rem;
+    --btn-radius: 0.5rem
+}
+
+.btn_container {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 1.5vw;
+    flex-wrap: wrap
+}
+
+.btn_container.centered {
+    justify-content: center;
+}
+
+button {
+    width: 18vw;
+    height: 9vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: #42577d;
+    color: white;
+    font-size: 1.5rem;
+
+    border-radius: var(--btn-radius);
+    border-width: var(--btn-border-size);
+    border-style: solid;
+    border-color: #42577D; /* Top and left */
+    border-bottom-color: #333333;
+    border-right-color: #333333;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+button:active {
+    color: #000;
+    border-color: #333333; /* Top and left */
+    border-right-color: #42577d;
+    border-bottom-color: #42577d;
+}
+
+/* === Green Button Modifier === */
+.green_button {
+    background-color: #3dcb5a;
+    border-color: #3dcb5a;
+    border-right-color: #2c9541;
+    border-bottom-color: #2c9541;
+}
+
+.green_button:active {
+    border-color: #2c9541;
+    border-right-color: #3dcb5a;
+    border-bottom-color: #3dcb5a;
+}
+
+.green_button:disabled {
+    background-color: #888888;
+    color: #ccc;
+    border-color: #888888;
+    border-right-color: #444444;
+    border-bottom-color: #444444;
+}
+
+/* === Red Backspace Button Modifier === */
+.backspace_button {
+    background-color: #e34040;
+    border-color: #e34040;
+    border-right-color: #8d2b2b;
+    border-bottom-color: #8d2b2b;
+}
+
+.backspace_button:active {
+    color: #000;
+    border-color: #8d2b2b;
+    border-right-color: #e34040;
+    border-bottom-color: #e34040;
+}
+
+.numpad_button {
+    width: 25%
+}

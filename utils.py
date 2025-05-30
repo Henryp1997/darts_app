@@ -1,5 +1,5 @@
 from datetime import datetime
-from dash import no_update as nop
+from dash import html, no_update as nop
 import math
 
 # App specific imports

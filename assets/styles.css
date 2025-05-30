@@ -2,71 +2,10 @@ body {
     background-color: #000
 }
 
-button {
-    margin-right: 1.425%;
-    margin-top: 1.425%;
-    width: 18.5%;
-    height: 9vh;
-    justify-content: center;
-    background-color: #42577d;
+.page_title_div {
     color: white;
-    border-radius: 0.5rem;
-    border-bottom: 0.3rem solid #333333;
-    border-right: 0.3rem solid #333333;
-    border-top: 0.3rem solid #42577d;
-    border-left: 0.3rem solid #42577d;
-    font-size: 1.5rem
-}
-
-button:hover {
-    cursor: pointer;
-}
-
-button:active {
-    color: #000;
-    border-bottom: 0.3rem solid #42577d;
-    border-right: 0.3rem solid #42577d;
-    border-top: 0.3rem solid #333333;
-    border-left: 0.3rem solid #333333;
-}
-
-.green_button {
-    background-color: #3dcb5a;
-    border-bottom: 0.3rem solid #2c9541;
-    border-right: 0.3rem solid #2c9541;
-    border-top: 0.3rem solid #3dcb5a;
-    border-left: 0.3rem solid #3dcb5a;
-}
-
-.green_button:active {
-    border-bottom: 0.3rem solid #3dcb5a;
-    border-right: 0.3rem solid #3dcb5a;
-    border-top: 0.3rem solid #2c9541;
-    border-left: 0.3rem solid #2c9541;
-}
-
-.green_button:disabled {
-    background-color: #888888;
-    border-bottom: 0.3rem solid #444444;
-    border-right: 0.3rem solid #444444;
-    border-top: 0.3rem solid #888888;
-    border-left: 0.3rem solid #888888;
-}
-
-.backspace_button {
-    background-color: #e34040;
-    border-bottom: 0.3rem solid #8d2b2b;
-    border-right: 0.3rem solid #8d2b2b;
-    border-top: 0.3rem solid #e34040;
-    border-left: 0.3rem solid #e34040;
-}
-
-.backspace_button:active {
-    color: #000;
-    border-bottom: 0.3rem solid #e34040;
-    border-right: 0.3rem solid #e34040;
-    border-top: 0.3rem solid #8d2b2b;
-    border-left: 0.3rem solid #8d2b2b;
+    font-size: 2rem;
+    border-bottom: 1px solid white
 }
 
 .home_heading {
@@ -94,6 +33,10 @@ button:active {
 .white_text_inline {
     color: white;
     display: inline-block
+}
+
+.boxed_div {
+    border: 2px solid white
 }
 
 .grey_window {

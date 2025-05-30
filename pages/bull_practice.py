@@ -6,95 +6,72 @@ import pandas as pd
 
 # App specific imports
 import utils
-from consts import DATA_PATH, ARROW_LEFT, TICK
+import common_elems as elems
+from common_elems import v_spacer
+from consts import(
+    DATA_PATH,
+    ARROW_LEFT,
+    TICK,
+    HIDE,
+    BULL_CURRENT_STR,
+    BULL_ALLTIME_STR,
+    BULL25_CURRENT_STR,
+    BULL25_ALLTIME_STR
+)
 
 dash.register_page(__name__)
 
 def layout():
     return html.Div([
-            html.Div("Bullseye Practice", style={"color": "white", "font-size": "2rem", "border-bottom": "1px solid #fff"}),
-            html.Div("0", id="n_visits_bp", style={"display": "none"}),
-            html.Div("0", id="length_dataframe", style={"display": "none"}),
-            html.Div(style={"height": "1rem"}),
-            html.Div([
-                html.Div(style={"height": "0.5rem"}),
-                html.Div(".", className="black_text_inline_spacer", style={"width": "2%"}),
-                html.Div("Darts:", className="white_text_inline"),
-                html.Div(".", className="black_text_inline_spacer", style={"width": "7.5%"}),
-                html.Div("_____", id="dart_1_bp", className="white_text_inline"),
-                html.Div(".", className="black_text_inline_spacer", style={"width": "7.5%"}),
-                html.Div("_____", id="dart_2_bp", className="white_text_inline"),
-                html.Div(".", className="black_text_inline_spacer", style={"width": "7.5%"}),
-                html.Div("_____", id="dart_3_bp", className="white_text_inline"),
-                html.Div(style={"height": "0.5rem"}),
-            ], style={"border": "2px solid #fff"}),
-            html.Div(style={"height": "0.5rem"}),
+            html.Div("Bullseye Practice", className="page_title_div"),
+            html.Div("0", id="n_visits_bp", style=HIDE),
+            html.Div("0", id="length_dataframe", style=HIDE),
+            v_spacer("2vh"),
+            elems.get_darts_hit_bar(page="bull_practice"),
+            v_spacer("1vh"),
 
-            # bull hits current
-            html.Div([
-                html.Div(style={"height": "0.5rem"}),
-                html.Div(".", className="black_text_inline_spacer", style={"width": "2%"}),
-                html.Div("Bull hits (current session):", className="white_text_inline"),
-                html.Div(".", className="black_text_inline_spacer", style={"width": "7%"}),
-                html.Div("_____", id="bull_hits_current", className="white_text_inline"),
-                html.Div(style={"height": "0.5rem"}),
-            ], style={"border": "2px solid #fff"}),
-            html.Div(style={"height": "0.5rem"}),
+            html.Div(
+                [
+                    html.Div([
+                        html.Div([
+                            v_spacer("1vh"),
+                            elems.padded_text_white(text, margin_right=mr),
+                            html.Div("_____", id=id, className="white_text_inline"),
+                            v_spacer("1vh")
+                        ], className="boxed_div"),
+                        v_spacer("1vh")
+                    ])
+                    for text, mr, id in zip(
+                        (BULL_CURRENT_STR, BULL_ALLTIME_STR, BULL25_CURRENT_STR, BULL25_ALLTIME_STR),
+                        ("6.5vw", "21vw", "9.5vw", "24vw"),
+                        ("bull_hits_current", "25_hits_current", "bull_hits_all", "25_hits_all")
+                    )
+                ]
+            ),
 
-            # 25 hits current
-            html.Div([
-                html.Div(style={"height": "0.5rem"}),
-                html.Div(".", className="black_text_inline_spacer", style={"width": "2%"}),
-                html.Div("25 hits (current session):", className="white_text_inline"),
-                html.Div(".", className="black_text_inline_spacer", style={"width": "10.25%"}),
-                html.Div("_____", id="25_hits_current", className="white_text_inline"),
-                html.Div(style={"height": "0.5rem"}),
-            ], style={"border": "2px solid #fff"}),
-            html.Div(style={"height": "0.5rem"}),
-
-            # bull hits all time
-            html.Div([
-                html.Div(style={"height": "0.5rem"}),
-                html.Div("..", className="black_text_inline_spacer"),
-                html.Div("Bull hits (all time):", className="white_text_inline"),
-                html.Div(".", className="black_text_inline_spacer", style={"width": "22%"}),
-                html.Div("_____", id="bull_hits_all", className="white_text_inline"),
-                html.Div(style={"height": "0.5rem"}),
-            ], style={"border": "2px solid #fff"}),
-            html.Div(style={"height": "0.5rem"}),
-
-            # 25 hits current
-            html.Div([
-                html.Div(style={"height": "0.5rem"}),
-                html.Div("..", className="black_text_inline_spacer"),
-                html.Div("25 hits (all time):", className="white_text_inline"),
-                html.Div(".", className="black_text_inline_spacer", style={"width": "25%"}),
-                html.Div("_____", id="25_hits_all", className="white_text_inline"),
-                html.Div(style={"height": "0.5rem"}),
-            ], style={"border": "2px solid #fff"}),
-            html.Div(style={"height": "0.5rem"}),
-
-            # 25 hits all time
+            # Score input section
             html.Div([
                 html.Div([
-                    html.Div(style={"height": "0.5rem"}),
+                    v_spacer("1vh"),
                     html.Div("Scoring", style={"color": "white"}),
+                    v_spacer("1vh"),
                     html.Div([
                         html.Button("25", id="btn_25_bp"),
                         html.Button("Bull", id="btn_bull_bp"),
                         html.Button("Miss", id="btn_miss_bp"),
-                    ]),
-                    html.Div(style={"height": "1rem"}),
+                    ], className="btn_container"),
+                    v_spacer("1.5vh"),
                     html.Div("Additional scoring options", style={"color": "white"}),
+                    v_spacer("1vh"),
                     html.Div([
                         html.Button("Outer wire", id="btn_outer", style={"width": "9rem"}),
                         html.Button("Inner wire", id="btn_inner", style={"width": "9rem"}),
-                    ]),
-                    html.Div(style={"height": "1rem"}),
+                    ], className="btn_container"),
+                    v_spacer("1.5vh"),
                     html.Div([
                         html.Button(ARROW_LEFT, id="btn_backspace_bp", className="backspace_button"),
                         html.Button(TICK, id="btn_confirm_bp", disabled=True, className="green_button")
-                    ])
+                    ], className="btn_container")
                 ])
             ]),
         ])
