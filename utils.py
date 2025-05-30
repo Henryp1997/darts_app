@@ -1,5 +1,5 @@
 from datetime import datetime
-from dash import html, no_update as nop
+from dash import no_update as nop
 import math
 
 # App specific imports
@@ -7,8 +7,8 @@ from consts import DATA_PATH
 
 def calculate_total(d1, d2, d3):
     darts = [d1, d2, d3]
-    if 'Bull' in darts:
-        darts[darts.index('Bull')] = '50'
+    if "Bull" in darts:
+        darts[darts.index("Bull")] = "50"
     darts = [convert_score(i) for i in darts]
     return sum([int(i) for i in darts])
 
@@ -52,9 +52,9 @@ def update_3_dart_avg_file(n_visits, avg, target):
 
 
 def convert_score(value):
-    if 'D' in value:
+    if "D" in value:
         return int(value.split("D")[1]) * 2
-    if 'T' in value:
+    if "T" in value:
         return int(value.split("T")[1]) * 3
     if value == "Bull":
         return 50
@@ -69,12 +69,11 @@ def convert_all_btns_to_dbl_tbl(btn_1_text, d_or_t):
 
 def initialise_3_dart_avg(df):
     n_visits = len(df)
-    avg = float("%.2f" % df['Total'].mean())
-    total = int(df['Total'].sum())
+    avg = float("%.2f" % df["Total"].mean())
+    total = int(df["Total"].sum())
     if math.isnan(avg):
         avg = "0"
         total = "0"
-    # update_3_dart_avg_file(n_visits, avg, target)
     return str(avg), str(total), str(n_visits)
 
 
@@ -101,17 +100,17 @@ def calc_alltime_3_dart_avg(n_visits, n_visits_all, running_total, alltime_total
 
 def delete_last_entry_in_file(target):
     csv_file = f"{DATA_PATH}/{target}_practice"
-    with open(f'{csv_file}.csv', "r") as f:
+    with open(f"{csv_file}.csv", "r") as f:
         lines = f.readlines()
     
     f.close()
 
-    open(f'{csv_file}.csv', 'w').close()
-    with open(f'{csv_file}.csv', 'a') as g:
+    open(f"{csv_file}.csv", "w").close()
+    with open(f"{csv_file}.csv", "a") as g:
         for i, line in enumerate(lines):
-            if '/' in line or 'Timestamp' in line: # line not empty
+            if "/" in line or "Timestamp" in line: # Line not empty
                 try:
-                    x = lines[i + 1]
+                    _ = lines[i + 1]
                 except IndexError:
                     return line.strip("\n").split(",")[-1]
                 g.write(line)
