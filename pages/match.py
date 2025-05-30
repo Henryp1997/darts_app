@@ -26,7 +26,7 @@ def layout(start=None):
 
             # Initialisation div
             html.Div([
-                html.Div(style={"height": "10rem"}),
+                v_spacer("15vh"),
                 html.Div([
                     v_spacer("1.5vh"),
                     html.Div("Choose player to start", style={"font-size": "1.5rem", "text-align": "center"}),
@@ -178,7 +178,7 @@ def store_start_score(n, score):
 )
 def change_btn_style(n_p1, n_p2):
     trigger = dash.callback_context.triggered[0]['prop_id']
-    if '1' in trigger:
+    if "1" in trigger:
         return "green_button", "backspace_button"
     return "backspace_button", "green_button"
 
@@ -191,7 +191,7 @@ def change_btn_style(n_p1, n_p2):
 )
 def change_choice_text(n_p1, n_p2):
     trigger = dash.callback_context.triggered[0]['prop_id']
-    i = 1 if '1' in trigger else 2
+    i = 1 if "1" in trigger else 2
     return f"Player {i} starts?"
 
 
@@ -201,7 +201,7 @@ def change_choice_text(n_p1, n_p2):
     State("init_choice_text", "children"),
     prevent_initial_call=True
 )
-def init_player_started_value(n, choice):
+def init_player_started_value(_, choice):
     return "1" in choice
 
 
