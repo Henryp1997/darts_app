@@ -40,7 +40,7 @@ def layout(target=None):
                 v_spacer("1vh"),
                 html.Div([
                     v_spacer("1vh"),
-                    elems.padded_text_white("3-dart average (current session):", margin_right="7vw"),
+                    elems.padded_text_white("3-dart average (current session):", margin_right="7.3vw"),
                     html.Div("_____", id="3_dart_avg_current", className="white_text_inline"),
                     v_spacer("1vh"),
                 ], style={"border": "2px solid #fff"}),
