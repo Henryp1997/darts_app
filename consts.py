@@ -9,10 +9,12 @@ CLOCK = "\U0001F553"
 HIDE = {"display": "none"}
 
 # Text
-BULL_CURRENT_STR = "Bull hits (current session):"
-BULL_ALLTIME_STR = "Bull hits (all time):"
-BULL25_CURRENT_STR = "25 hits (current session):"
-BULL25_ALLTIME_STR = "25 hits (all time):"
+BULL_STRS = (
+    "Bull hits (current session):",
+    "Bull hits (all time):",
+    "25 hits (current session):",
+    "25 hits (all time):",
+)
 
 ID_VALUE_MAP = {
     "btn_1"   : "1",

@@ -13,10 +13,7 @@ from consts import(
     ARROW_LEFT,
     TICK,
     HIDE,
-    BULL_CURRENT_STR,
-    BULL_ALLTIME_STR,
-    BULL25_CURRENT_STR,
-    BULL25_ALLTIME_STR,
+    BULL_STRS,
     ID_VALUE_MAP
 )
 
@@ -43,7 +40,7 @@ def layout():
                         v_spacer("1vh")
                     ])
                     for text, mr, id in zip(
-                        (BULL_CURRENT_STR, BULL_ALLTIME_STR, BULL25_CURRENT_STR, BULL25_ALLTIME_STR),
+                        BULL_STRS,
                         ("7.2vw", "21.1vw", "9.2vw", "23.2vw"),
                         ("bull_hits_current", "bull_hits_all", "25_hits_current", "25_hits_all")
                     )
