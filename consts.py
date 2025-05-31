@@ -40,8 +40,8 @@ ID_VALUE_MAP = {
     "btn_miss": "0",
 
     "btn_bull_bp": "Bull",
-    "btn_25_bp": "25",
+    "btn_25_bp"  : "25",
     "btn_miss_bp": "Miss",
-    "btn_outer": "Miss (OW)",
-    "btn_inner": "25 (IW)"
+    "btn_outer"  : "Miss (OW)",
+    "btn_inner"  : "25 (IW)"
 }

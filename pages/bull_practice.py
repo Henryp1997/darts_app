@@ -44,7 +44,7 @@ def layout():
                     ])
                     for text, mr, id in zip(
                         (BULL_CURRENT_STR, BULL_ALLTIME_STR, BULL25_CURRENT_STR, BULL25_ALLTIME_STR),
-                        ("6.5vw", "20.9vw", "9.5vw", "24vw"),
+                        ("7.2vw", "21.1vw", "9.2vw", "23.2vw"),
                         ("bull_hits_current", "bull_hits_all", "25_hits_current", "25_hits_all")
                     )
                 ]
