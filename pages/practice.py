@@ -163,17 +163,22 @@ def double_treble_text(btn_1_text, n_double, n_treble, *btns):
     Input("btn_bull", "n_clicks"),
     Input("btn_miss", "n_clicks"),
 
+    State("btn_1", "children"),
     State("dart_1", "children"),
     State("dart_2", "children"),
     State("dart_3", "children"),
     prevent_initial_call=True
 )
 def record_thrown_dart(*args):
+    btn_1_text = args[-4]
     d1, d2, d3 = args[-3:]
     trigger = dash.callback_context.triggered[0]['prop_id']
     id = trigger.split(".n_clicks")[0]
-    
+
     value = ID_VALUE_MAP[id]
+    if id not in ("btn_25", "btn_bull", "btn_miss"):
+        if "D" in btn_1_text: value = f"D{value}"
+        if "T" in btn_1_text: value = f"T{value}"
     return utils.record_dart_in_correct_place(d1, d2, d3, value)
 
 
