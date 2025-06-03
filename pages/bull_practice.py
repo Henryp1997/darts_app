@@ -190,7 +190,7 @@ def record_all_3_darts(n_confirm, d1, d2, d3):
     prevent_initial_call = True
 )
 def update_currents(n, n_visits_now, n_visits_all, bull_hits_now, hits_25_now, bull_hits_all, hits_25_all, d1, d2, d3):
-    n_bull_in_visit = [d1, d2, d3].count("Bull")
+    n_bull_in_visit = [d1, d2, d3].count("Bull") + [d1, d2, d3].count(50)
     n_25_in_visit = [d1, d2, d3].count("25") + [d1, d2, d3].count("25 (IW)")
 
     total_bulls_now = int(bull_hits_now.split(" /")[0]) + n_bull_in_visit
