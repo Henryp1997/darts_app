@@ -93,7 +93,7 @@ def init_bull_file(n):
             n_thrown = n_visits * 3
             all_darts = list(df['Dart1']) + list(df['Dart2']) + list(df['Dart3'])
             all_darts = [str(i) for i in all_darts]
-            n_bull = all_darts.count("Bull")
+            n_bull = all_darts.count("Bull") + all_darts.count("50")
             n_25 = all_darts.count('25') + all_darts.count("25 (IW)")
 
             perc_bull = 0 if n_thrown == 0 else float("%.1f" % (100 * n_bull / n_thrown))
@@ -190,7 +190,7 @@ def record_all_3_darts(n_confirm, d1, d2, d3):
     prevent_initial_call = True
 )
 def update_currents(n, n_visits_now, n_visits_all, bull_hits_now, hits_25_now, bull_hits_all, hits_25_all, d1, d2, d3):
-    n_bull_in_visit = [d1, d2, d3].count("Bull") + [d1, d2, d3].count(50)
+    n_bull_in_visit = [d1, d2, d3].count("Bull") + [d1, d2, d3].count("50")
     n_25_in_visit = [d1, d2, d3].count("25") + [d1, d2, d3].count("25 (IW)")
 
     total_bulls_now = int(bull_hits_now.split(" /")[0]) + n_bull_in_visit
