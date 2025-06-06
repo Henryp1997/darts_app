@@ -77,9 +77,10 @@ def initialise_3_dart_avg(df):
     return str(avg), str(total), str(n_visits)
 
 
-def create_3_dart_avg_file(DATA_PATH, target):
+def create_3_dart_avg_file(target):
     with open(f"{DATA_PATH}/{target}_practice.csv", "w") as f:
-        f.write("Timestamp,Dart1,Dart2,Dart3,Total")
+        total = "" if target == "bull" else ",Total"
+        f.write(f"Timestamp,Dart1,Dart2,Dart3{total}\n")
     f.close()
 
 

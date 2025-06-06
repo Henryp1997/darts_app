@@ -101,11 +101,9 @@ def init_bull_file(n):
 
             return f"{n_bull} / {n_thrown} ({perc_bull}%)", f"{n_25} / {n_thrown} ({perc_25}%)", "0 / 0 (0%)", "0 / 0 (0%)", str(n_visits)
         except FileNotFoundError:
-            # init file if not found
-            with open(f"{DATA_PATH}/bull_practice.csv", "w") as f:
-                f.write("Timestamp,Dart1,Dart2,Dart3")
-            f.close()
-            return "_____", "_____", "_____", "_____", "0"    
+            # Init file not found
+            utils.create_3_dart_avg_file(target="bull")
+            return "_____", "_____", "_____", "_____", "0"
     return nop
 
 
