@@ -126,7 +126,7 @@ def init_avg_file(n, title):
             return utils.initialise_3_dart_avg(df)
         except FileNotFoundError:
             # Init file if not found
-            utils.create_3_dart_avg_file(DATA_PATH, target)
+            utils.create_3_dart_avg_file(target=target)
             return "_____", "0", "0"
     return nop, nop, nop
 
