@@ -1,5 +1,5 @@
 import dash
-from dash import html, callback
+from dash import html, callback, clientside_callback
 from dash import no_update as nop
 from dash.dependencies import Output, Input, State
 import pandas as pd
@@ -21,58 +21,58 @@ dash.register_page(__name__)
 
 def layout():
     return html.Div([
-            html.Div("Bullseye Practice", className="page_title_div"),
-            html.Div("0", id="n_visits_bp", style=HIDE),
-            html.Div("0", id="length_dataframe", style=HIDE),
-            v_spacer("2vh"),
-            elems.get_darts_hit_bar(page="bull_practice"),
-            v_spacer("1vh"),
+        html.Div("Bullseye Practice", className="page_title_div"),
+        html.Div("0", id="n_visits_bp", style=HIDE),
+        html.Div("0", id="length_dataframe", style=HIDE),
+        v_spacer("2vh"),
+        elems.get_darts_hit_bar(page="bull_practice"),
+        v_spacer("1vh"),
 
-            html.Div(
-                [
-                    html.Div([
-                        html.Div([
-                            v_spacer("1vh"),
-                            elems.padded_text_white(text, margin_right=mr),
-                            html.Div("_____", id=id, className="white_text_inline"),
-                            v_spacer("1vh")
-                        ], className="boxed_div"),
-                        v_spacer("1vh")
-                    ])
-                    for text, mr, id in zip(
-                        BULL_STRS,
-                        ("7.2vw", "21.1vw", "9.2vw", "23.2vw"),
-                        ("bull_hits_current", "bull_hits_all", "25_hits_current", "25_hits_all")
-                    )
-                ]
-            ),
-
-            # Score input section
-            html.Div([
+        html.Div(
+            [
                 html.Div([
-                    v_spacer("1vh"),
-                    html.Div("Scoring", style={"color": "white"}),
-                    v_spacer("1vh"),
                     html.Div([
-                        html.Button("25", id="btn_25_bp"),
-                        html.Button("Bull", id="btn_bull_bp"),
-                        html.Button("Miss", id="btn_miss_bp"),
-                    ], className="btn_container"),
-                    v_spacer("1.5vh"),
-                    html.Div("Additional scoring options", style={"color": "white"}),
-                    v_spacer("1vh"),
-                    html.Div([
-                        html.Button("Outer wire", id="btn_outer", style={"width": "9rem"}),
-                        html.Button("Inner wire", id="btn_inner", style={"width": "9rem"}),
-                    ], className="btn_container"),
-                    v_spacer("1.5vh"),
-                    html.Div([
-                        html.Button(ARROW_LEFT, id="btn_backspace_bp", className="backspace_button"),
-                        html.Button(TICK, id="btn_confirm_bp", disabled=True, className="green_button")
-                    ], className="btn_container")
+                        v_spacer("1vh"),
+                        elems.padded_text_white(text, margin_right=mr),
+                        html.Div("_____", id=id, className="white_text_inline"),
+                        v_spacer("1vh")
+                    ], className="boxed_div"),
+                    v_spacer("1vh")
                 ])
-            ]),
-        ])
+                for text, mr, id in zip(
+                    BULL_STRS,
+                    ("7.2vw", "21.1vw", "9.2vw", "23.2vw"),
+                    ("bull_hits_current", "bull_hits_all", "25_hits_current", "25_hits_all")
+                )
+            ]
+        ),
+
+        # Score input section
+        html.Div([
+            html.Div([
+                v_spacer("1vh"),
+                html.Div("Scoring", style={"color": "white"}),
+                v_spacer("1vh"),
+                html.Div([
+                    html.Button("25", id="btn_25_bp"),
+                    html.Button("Bull", id="btn_bull_bp"),
+                    html.Button("Miss", id="btn_miss_bp"),
+                ], className="btn_container"),
+                v_spacer("1.5vh"),
+                html.Div("Additional scoring options", style={"color": "white"}),
+                v_spacer("1vh"),
+                html.Div([
+                    html.Button("Outer wire", id="btn_outer", style={"width": "9rem"}),
+                    html.Button("Inner wire", id="btn_inner", style={"width": "9rem"}),
+                ], className="btn_container"),
+                v_spacer("1.5vh"),
+                html.Div([
+                    html.Button(ARROW_LEFT, id="btn_backspace_bp", className="backspace_button"),
+                    html.Button(TICK, id="btn_confirm_bp", disabled=True, className="green_button")
+                ], className="btn_container")
+            ])
+        ]),
+    ])
 
 ### CALLBACKS
 @callback(
@@ -131,18 +131,19 @@ def record_thrown_dart(n_25, n_bp, n_miss, n_outer, n_inner, d1, d2, d3):
     return utils.record_dart_in_correct_place(d1, d2, d3, value)
 
 
-@callback(
-    Output("dart_1_bp", "children", allow_duplicate=True),
-    Output("dart_2_bp", "children", allow_duplicate=True),
-    Output("dart_3_bp", "children", allow_duplicate=True),
+clientside_callback(
+    utils.clear_last_dart(),
+    [
+        Output("dart_1_bp", "children", allow_duplicate=True),
+        Output("dart_2_bp", "children", allow_duplicate=True),
+        Output("dart_3_bp", "children", allow_duplicate=True)
+    ],
     Input("btn_backspace_bp", "n_clicks"),
     State("dart_1_bp", "children"),
     State("dart_2_bp", "children"),
     State("dart_3_bp", "children"),
     prevent_initial_call=True
 )
-def delete_dart_input(n_backspace, d1, d2, d3):
-    return utils.clear_last_dart(d1, d2, d3)
 
 
 @callback(

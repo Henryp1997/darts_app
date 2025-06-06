@@ -134,14 +134,53 @@ def calc_remaining_score_numpad(score, score_thrown):
     return str(score - score_thrown) if score_thrown < score - 1 else str(score)
 
 
-def clear_last_dart(d1, d2, d3):
-    """ Delete the most recent dart score input """
-    darts = [d1, d2, d3]
-    for i in reversed(range(3)):
-        if darts[i] != "_____":
-            darts[i] = "_____"
-            break
-    return tuple(darts)
+def clear_last_dart():
+    """ 
+    Delete the most recent dart score input
+
+    NOTE: this returns a string as it is to be
+    used in clientside_callbacks only (JS code)
+    """
+    JS_code = """
+        function(n_clicks, d1, d2, d3) {
+            let darts = [d1, d2, d3];
+            for (let i = 2; i >= 0; i--) {
+                if (darts[i] !== "_____") {
+                    darts[i] = "_____";
+                    break;
+                }
+            }
+            return darts;
+        }
+    """
+    return JS_code
+
+
+def clear_last_number():
+    """
+    Delete the most recent number in the numpad input (for Match)
+
+    NOTE: this returns a string as it is to be
+    used in clientside_callbacks only (JS code)
+    """
+    JS_code = """
+        function(n, score) {
+            // Handle the fact that Dash prevents the
+            // first call when using allow_duplicate
+            if (typeof n !== "number" || n === 0 || typeof score !== "string") {
+                return [window.dash_clientside.no_update, window.dash_clientside.no_update];
+            }
+            if (score !== "_____") {
+                score = score.slice(0, -1); // Strip off last character
+                if (score.length === 0) {
+                    return ["_____", true];
+                }
+                return [score, false];
+            }
+            return [window.dash_clientside.no_update, true];
+        }
+    """
+    return JS_code
 
 
 def record_dart_in_correct_place(d1, d2, d3, value):

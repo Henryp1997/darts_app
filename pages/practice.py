@@ -1,7 +1,7 @@
 import dash
-from dash import html, callback
+from dash import html, callback, clientside_callback, ctx
 from dash import no_update as nop
-from dash.dependencies import Output, Input, State
+from dash.dependencies import Output, Input, State, ALL
 import pandas as pd
 
 # App imports
@@ -57,25 +57,25 @@ def layout(target=None):
                 html.Div([
                     html.Div([
                         html.Div([
-                            *[html.Button(f"{i}", id=f"btn_{i}") for i in range(1, 6)]
+                            *[html.Button(f"{i}", id={"type": "dart_btn", "id": f"btn_{i}"}) for i in range(1, 6)]
                         ], className="btn_container"),
                         v_spacer("0.75vh"),
                         html.Div([
-                            *[html.Button(f"{i}", id=f"btn_{i}") for i in range(6, 11)]
+                            *[html.Button(f"{i}", id={"type": "dart_btn", "id": f"btn_{i}"}) for i in range(6, 11)]
                         ], className="btn_container"),
                         v_spacer("0.75vh"),
                         html.Div([
-                            *[html.Button(f"{i}", id=f"btn_{i}") for i in range(11, 16)]
+                            *[html.Button(f"{i}", id={"type": "dart_btn", "id": f"btn_{i}"}) for i in range(11, 16)]
                         ], className="btn_container"),
                         v_spacer("0.75vh"),
                         html.Div([
-                            *[html.Button(f"{i}", id=f"btn_{i}") for i in range(16, 21)]                   
+                            *[html.Button(f"{i}", id={"type": "dart_btn", "id": f"btn_{i}"}) for i in range(16, 21)]                   
                         ], className="btn_container"),
                         v_spacer("0.75vh"),
                         html.Div([
-                            html.Button("25", id="btn_25"),
-                            html.Button("Bull", id="btn_bull"),
-                            html.Button("Miss", id="btn_miss"),
+                            html.Button("25", id={"type": "dart_btn", "id": "btn_25"}),
+                            html.Button("Bull", id={"type": "dart_btn", "id": "btn_bull"}),
+                            html.Button("Miss", id={"type": "dart_btn", "id": "btn_miss"}),
                             html.Button("Delete last score", id="btn_del_last", className="del_last_score_btn")
                         ], className="btn_container"),
                         v_spacer("0.75vh"),
@@ -113,7 +113,7 @@ def layout(target=None):
     Output("3_dart_avg", "children"),
     Output("all_time_total", "children"),
     Output("n_visits_alltime", "children"),
-    Input("btn_1", "children"),
+    Input({"type": "dart_btn", "id": "btn_1"}, "children"),
     State("title", "children")
 )
 def init_avg_file(n, title):
@@ -132,49 +132,47 @@ def init_avg_file(n, title):
 
 
 @callback(
-    *[Output(f"btn_{i}", "children") for i in range(1, 21)],
-    Input("btn_1", "children"),
+    Output({"type": "dart_btn", "id": ALL}, "children", allow_duplicate=True),
     Input("btn_double", "n_clicks"),
     Input("btn_treble", "n_clicks"),
-    *[Input(f"btn_{i}", "n_clicks") for i in range(1, 21)],
+    State({"type": "dart_btn", "id": "btn_1"}, "children"),
     prevent_initial_call=True
 )
-def double_treble_text(btn_1_text, n_double, n_treble, *btns):
-    trigger = dash.callback_context.triggered[0]['prop_id']
-    
-    if "double" in trigger or "treble" in trigger:
-        return utils.convert_all_btns_to_dbl_tbl(
-            btn_1_text, 
-            d_or_t="D" if "double" in trigger else "T"
-        )
-      
-    # Below code executed if one of the number buttons triggered this callback
+def set_double_treble_text(_1, _2, btn_1_text):
+    trigger = ctx.triggered_id
+
+    if "double" in trigger:
+        d_or_t = "" if "D" in btn_1_text else "D"
+    if "treble" in trigger:
+        d_or_t = "" if "T" in btn_1_text else "T"
+
+    return *(f"{d_or_t}{i}" for i in range(1, 21)), nop, nop, nop
+
+
+@callback(
+    Output({"type": "dart_btn", "id": ALL}, "children", allow_duplicate=True),
+    Input({"type": "dart_btn", "id": ALL}, "n_clicks"),
+    prevent_initial_call=True
+)
+def reset_double_treble_text(_):
+    # Below code executed if one of the number buttons clicked
     # This just returns the button texts to non double or treble
-    return [f"{i}" for i in range(1, 21)]
+    return *(f"{i}" for i in range(1, 21)), nop, nop, nop
 
 
 @callback(
     Output("dart_1", "children"),
     Output("dart_2", "children"),
     Output("dart_3", "children"),
-
-    *[Input(f"btn_{i}", "n_clicks") for i in range(1, 21)],
-    Input("btn_25", "n_clicks"),
-    Input("btn_bull", "n_clicks"),
-    Input("btn_miss", "n_clicks"),
-
-    State("btn_1", "children"),
+    Input({"type": "dart_btn", "id": ALL}, "n_clicks"),
+    State({"type": "dart_btn", "id": "btn_1"}, "children"),
     State("dart_1", "children"),
     State("dart_2", "children"),
     State("dart_3", "children"),
     prevent_initial_call=True
 )
-def record_thrown_dart(*args):
-    btn_1_text = args[-4]
-    d1, d2, d3 = args[-3:]
-    trigger = dash.callback_context.triggered[0]['prop_id']
-    id = trigger.split(".n_clicks")[0]
-
+def record_thrown_dart(_nclicks, btn_1_text, d1, d2, d3):
+    id = ctx.triggered_id["id"]
     value = ID_VALUE_MAP[id]
     if id not in ("btn_25", "btn_bull", "btn_miss"):
         if "D" in btn_1_text: value = f"D{value}"
@@ -201,18 +199,19 @@ def record_all_3_darts(_, d1, d2, d3, running_total, title):
     return "_____", "_____", "_____", str(int(running_total) + total)
 
 
-@callback(
-    Output("dart_1", "children", allow_duplicate=True),
-    Output("dart_2", "children", allow_duplicate=True),
-    Output("dart_3", "children", allow_duplicate=True),
+clientside_callback(
+    utils.clear_last_dart(),
+    [
+        Output("dart_1", "children", allow_duplicate=True),
+        Output("dart_2", "children", allow_duplicate=True),
+        Output("dart_3", "children", allow_duplicate=True)
+    ],
     Input("btn_backspace", "n_clicks"),
     State("dart_1", "children"),
     State("dart_2", "children"),
     State("dart_3", "children"),
     prevent_initial_call=True
 )
-def delete_dart_input(n_backspace, d1, d2, d3):
-    return utils.clear_last_dart(d1, d2, d3)
 
 
 @callback(

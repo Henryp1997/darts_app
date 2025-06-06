@@ -1,7 +1,7 @@
 import dash
-from dash import html, callback
+from dash import html, callback, clientside_callback, ctx
 from dash import no_update as nop
-from dash.dependencies import Output, Input, State
+from dash.dependencies import Output, Input, State, ALL
 
 # App specific imports
 import utils
@@ -97,15 +97,15 @@ def layout(start=None):
                             html.Div([
                                 v_spacer("1vh"),
                                 html.Div([
-                                    *[html.Button(f"{i}", id=f"btn_{i}_numpad", className="numpad_button") for i in range(1, 4)]
+                                    *[html.Button(f"{i}", id={"type": "numpad_btn", "id": f"btn_{i}_numpad"}, className="numpad_button") for i in range(1, 4)]
                                 ], className="btn_container centered"),
                                 v_spacer("1vh"),
                                 html.Div([
-                                    *[html.Button(f"{i}", id=f"btn_{i}_numpad", className="numpad_button") for i in range(4, 7)]
+                                    *[html.Button(f"{i}", id={"type": "numpad_btn", "id": f"btn_{i}_numpad"}, className="numpad_button") for i in range(4, 7)]
                                 ], className="btn_container centered"),
                                 v_spacer("1vh"),
                                 html.Div([
-                                    *[html.Button(f"{i}", id=f"btn_{i}_numpad", className="numpad_button") for i in range(7, 10)]
+                                    *[html.Button(f"{i}", id={"type": "numpad_btn", "id": f"btn_{i}_numpad"}, className="numpad_button") for i in range(7, 10)]
                                 ], className="btn_container centered"),
                                 v_spacer("1vh"),
                                 html.Div([
@@ -241,35 +241,47 @@ def init_screen_and_player(player_started, n_numpad, p1_name_class, numpad_score
 
 ### MAIN GAME
 @callback(
-    Output("numpad_score", "children"),
-    Output("btn_confirm_numpad", "disabled"),
-    *[Input(f"btn_{i}_numpad", "n_clicks") for i in range(0, 10)],
-    Input("p1_name", "style"),
-    Input("p2_name", "style"),
+    Output("numpad_score", "children", allow_duplicate=True),
+    Output("btn_confirm_numpad", "disabled", allow_duplicate=True),
+    Input({"type": "numpad_btn", "id": ALL}, "n_clicks"),
+    State("numpad_score", "children"),
+    prevent_initial_call=True
+)
+def record_score(_, score):
+    trigger = ctx.triggered_id
+    value = trigger["id"].split("btn_")[1].split("_numpad")[0]
+    if score == "_____":
+        return value, False
+
+    score += value # Append number to score number string
+    if len(score) > 3:
+        # Cap score at 3 digit number
+        return score[:-1], False
+    return score, False
+
+
+# Numpad backspace
+clientside_callback(
+    utils.clear_last_number(),
+    [
+        Output("numpad_score", "children", allow_duplicate=True),
+        Output("btn_confirm_numpad", "disabled", allow_duplicate=True)
+    ],
     Input("btn_backspace_numpad", "n_clicks"),
     State("numpad_score", "children"),
     prevent_initial_call=True
 )
-def record_score(*args):
-    trigger = dash.callback_context.triggered[0]['prop_id']
-    if 'name' in trigger:
-        return "_____", True
-    
-    if "backspace" in trigger and args[-1] != "_____":
-        score = args[-1][:-1]
-        if len(score) == 0:
-            return "_____", True
-        return score, False
-    elif "backspace" in trigger and args[-1] == "_____":
-        return nop, True
-       
-    value = trigger.split("btn_")[1].split("_numpad")[0]
-    score = args[-1] + value
-    if args[-1] == "_____":
-        return value, False
-    if len(score) > 3:
-        return score[:-1], False
-    return score, False
+
+
+@callback(
+    Output("numpad_score", "children", allow_duplicate=True),
+    Output("btn_confirm_numpad", "disabled", allow_duplicate=True),
+    Input("p1_name", "style"),
+    Input("p2_name", "style"),
+    prevent_initial_call=True
+)
+def reset_score_on_player_change(_1, _2):
+    return "_____", True
 
 
 @callback(
