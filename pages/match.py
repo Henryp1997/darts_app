@@ -5,8 +5,7 @@ from dash.dependencies import Output, Input, State, ALL
 
 # App specific imports
 import utils
-import common_elems as elems
-from common_elems import v_spacer
+from pages.helpers.common import v_spacer, padded_text_white
 from consts import ARROW_LEFT, TICK, HIDE
 
 dash.register_page(__name__)
@@ -83,7 +82,7 @@ def layout(start=None):
                 html.Div([
                     v_spacer("1vh"),
                     html.Div("..", className="black_text_inline_spacer"),
-                    elems.padded_text_white("Score:"),
+                    padded_text_white("Score:"),
                     html.Div(".", className="black_text_inline_spacer", style={"width": "25vw"}),
                     html.Div("_____", id="numpad_score", className="white_text_inline"),
                     v_spacer("1vh"),

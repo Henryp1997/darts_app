@@ -6,7 +6,7 @@ from dash.dependencies import Output, Input, State
 # App specific imports
 import utils
 from pages.helpers import around_the_clock_helper as helper
-from common_elems import v_spacer
+from pages.helpers.common import v_spacer
 from consts import CLOCK, TICK, HIDE
 
 dash.register_page(__name__)
@@ -69,9 +69,9 @@ def layout():
                     }
                 ),
                 v_spacer("2.5vh"),
-                helper.create_player_window(1, v_spacer),
+                helper.create_player_window(1),
                 v_spacer("2.5vh"),
-                helper.create_player_window(2, v_spacer)
+                helper.create_player_window(2)
             ], id="atc_main_window", style=HIDE),
 
             # Array storage

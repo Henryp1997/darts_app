@@ -1,6 +1,10 @@
 from dash import html
 
-def create_player_window(pnum, v_spacer):
+# App-specific imports
+from pages.helpers.common import v_spacer
+
+
+def create_player_window(pnum):
     """
     Create the window which shows the current target and contains the MISS and HIT buttons
     This is the same for both player 1 and 2 (aside from IDs), hence this function
