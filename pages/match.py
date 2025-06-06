@@ -108,7 +108,7 @@ def layout(start=None):
                                 ], className="btn_container centered"),
                                 v_spacer("1vh"),
                                 html.Div([
-                                    html.Button("0", id=f"btn_0_numpad", className="numpad_button"),
+                                    html.Button("0", id={"type": "numpad_btn", "id": f"btn_0_numpad"}, className="numpad_button"),
                                     html.Button(ARROW_LEFT, id="btn_backspace_numpad", className="backspace_button", style={"width": "25%"}),
                                     html.Button(TICK, id="btn_confirm_numpad", disabled=True, className="green_button", style={"width": "25%"})
                                 ], className="btn_container centered"),
