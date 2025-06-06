@@ -6,8 +6,8 @@ import pandas as pd
 
 # App specific imports
 import utils
-import common_elems as elems
-from common_elems import v_spacer
+import pages.helpers.practice_helper as helper
+from pages.helpers.common import v_spacer
 from consts import(
     DATA_PATH,
     ARROW_LEFT,
@@ -25,7 +25,7 @@ def layout():
         html.Div("0", id="n_visits_bp", style=HIDE),
         html.Div("0", id="length_dataframe", style=HIDE),
         v_spacer("2vh"),
-        elems.get_darts_hit_bar(page="bull_practice"),
+        helper.get_darts_hit_bar(page="bull_practice"),
         v_spacer("1vh"),
 
         html.Div(
@@ -33,7 +33,7 @@ def layout():
                 html.Div([
                     html.Div([
                         v_spacer("1vh"),
-                        elems.padded_text_white(text, margin_right=mr),
+                        helper.padded_text_white(text, margin_right=mr),
                         html.Div("_____", id=id, className="white_text_inline"),
                         v_spacer("1vh")
                     ], className="boxed_div"),

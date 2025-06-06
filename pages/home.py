@@ -3,7 +3,7 @@ from dash import html
 
 # App specific imports
 from consts import TRI_RIGHT
-from common_elems import v_spacer
+from pages.helpers.common import v_spacer
 
 dash.register_page(__name__, path="/")
 
