@@ -190,3 +190,14 @@ def record_dart_in_correct_place(d1, d2, d3, value):
         if darts[i] == "_____":
             return tuple(str(value) if j == i else nop for j in range(3))
     return nop, nop, nop
+
+
+def create_atc_arrays(nplayers, mode):
+    """ Create the target value arrays for Around the Clock (ATC) """
+    target_arrays = [[], []]
+    for i in range(nplayers):
+        if mode == "ordered":
+            target_arrays[i] = [str(i) for i in range(1, 20)] + ["25", "Bull"]
+        else:
+            pass
+    return target_arrays

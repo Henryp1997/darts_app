@@ -1,9 +1,11 @@
 import dash
-from dash import html, callback
+from dash import html, callback, dcc
 from dash import no_update as nop
 from dash.dependencies import Output, Input, State
 
 # App specific imports
+import utils
+from pages.helpers import around_the_clock_helper as helper
 from common_elems import v_spacer
 from consts import CLOCK, TICK, HIDE
 
@@ -56,21 +58,57 @@ def layout():
 
             # Main window
             html.Div([
-                html.Div([
-                    html.Div(style={"height": "1rem"}),
-                    html.Div("Current Target: "),
-                    html.Div([
-                            html.Button("MISS", className="backspace_button", style={"width": "30%"}),
-                            html.Button("HIT", className="green_button", style={"width": "30%"}),
-                            html.Div(style={"height": "0.5rem"}),
-                        ])
-                    ],
-                    className="grey_window", style={"width": "90%"}
-                )
-            ], id="atc_main_window", style=HIDE)
+                v_spacer("1.5vh"),
+                html.Div(
+                    id="atc_info_bar",
+                    className="grey_window",
+                    style={
+                        "font-size": "1rem",
+                        "textAlign": "left",
+                        "padding-left": "2vw", "padding-top": "0.5vh", "padding-bottom": "0.5vh"
+                    }
+                ),
+                v_spacer("2.5vh"),
+                helper.create_player_window(1, v_spacer),
+                v_spacer("2.5vh"),
+                helper.create_player_window(2, v_spacer)
+            ], id="atc_main_window", style=HIDE),
+
+            # Array storage
+            dcc.Store(id="p1_array", data=[]),
+            dcc.Store(id="p2_array", data=[])
         ])
 
 ### CALLBACKS
+
+@callback(
+    Output("p1_array", "data"),
+    Output("p2_array", "data"),
+    Input("btn_mode_confirm", "n_clicks"),
+    State("chosen_settings", "children"),
+    prevent_initial_call=True
+)
+def create_target_arrays(_, settings):
+    nplayers = 2 if "Two" in settings else 1
+    mode = "random" if "Random" in settings else "ordered"
+    return utils.create_atc_arrays(nplayers, mode)
+
+
+@callback(
+    Output("settings_screen", "style"),
+    Output("atc_main_window", "style"),
+    Output("atc_main_window1", "style"),
+    Output("atc_main_window2", "style"),
+    Output("atc_info_bar", "children"),
+    Input("btn_mode_confirm", "n_clicks"),
+    State("chosen_settings", "children"),
+    prevent_initial_call=True
+)
+def show_main_window(_, settings):
+    p2_style = {} if "Two" in settings else HIDE
+    return HIDE, {}, {}, p2_style, f"Current Mode: {settings.split("/ ")[1].split(" Mode?")[0]}"
+
+
 @callback(
     Output("btn_one_player", "className"),
     Output("btn_two_player", "className"),
@@ -108,7 +146,7 @@ def change_btn_style(n1, n2):
     State("chosen_settings", "children"),
     prevent_initial_call=True
 )
-def change_choice_text(n1, n2, n3, n4, settings):
+def change_choice_text(_1, _2, _3, _4, settings):
     trigger = dash.callback_context.triggered[0]['prop_id']
     if "one" in trigger or "two" in trigger:
         nplayers = "One" if "one" in trigger else "Two"
@@ -116,13 +154,3 @@ def change_choice_text(n1, n2, n3, n4, settings):
 
     mode = "Ordered Mode" if "ordered" in trigger else "Random Mode"
     return f"{settings.split(" /")[0]} / {mode}?"
-
-
-@callback(
-    Output("settings_screen", "style"),
-    Output("atc_main_window", "style"),
-    Input("btn_mode_confirm", "n_clicks"),
-    prevent_initial_call=True
-)
-def show_main_window(_):
-    return HIDE, {}
