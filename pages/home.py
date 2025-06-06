@@ -39,7 +39,7 @@ def layout():
         html.Div("Games", className="home_heading"),
         v_spacer("1.5vh"),
         html.Div([
-            html.A(f"{TRI_RIGHT} Around the clock", id="t20_link", href="around-the-clock", className="home_link_inner"),
+            html.A(f"{TRI_RIGHT} Around the clock", id="atc_link", href="around-the-clock", className="home_link_inner"),
         ]),
         v_spacer("3vh"),
 
